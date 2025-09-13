@@ -101,8 +101,13 @@ function isBoxFree(x, y, w, h) {
                 goalHit = true;
             }
 
+            if (isPassthroughColor(r, g, b)) {
+                passthroughHit = true;
+                break;
+            }
+
             if (!isBackgroundColor(r, g, b)) {
-                // console.log("Blocked by non-background color", r, g, b);
+                console.log("Blocked by non-background color", r, g, b);
                 return false;
             }
         }

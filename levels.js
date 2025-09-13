@@ -37,6 +37,11 @@ let keyA, keyN, keyY;
 function preload() {
     displayImg = loadImage(MAPS[current_level].img)
     player_color_index = MAPS[current_level].color_index
+    updateColorScheme(player_color_index)
+}
+
+function updateColorScheme(player_index) {
+    player_color_index = player_index
     passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
     goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
     background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
@@ -61,11 +66,7 @@ function loadNextLevel() {
     try {
         displayImg = loadImage(MAPS[current_level].img, () => {
             player_color_index = MAPS[current_level].color_index
-            passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
-            goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
-            background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
-            const bg = COLORS[background_color_index];
-            document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
+            updateColorScheme(player_color_index)
             resetLevel()
         })
     } catch (error) {

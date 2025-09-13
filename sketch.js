@@ -3,7 +3,7 @@ const W = 960, H = 640;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
-const TRAIL_MAX_LENGTH= 30;    // frames before trail turns solid
+const TRAIL_MAX_LENGTH= 20;    // frames before trail turns solid
 const MAX_STEP_UP     = 32;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
@@ -35,6 +35,7 @@ const player = {
 // Globals
 let trail = [{x: 0, y: 0}];
 let goalHit = false;
+let passthroughHit = false;
 let cnv;
 let displayLayer, solidMask;
 let screenShakeX = 0, screenShakeY = 0;
@@ -74,11 +75,7 @@ function resetLevel() {
         solidMask.image(displayImg, 0, 0, W, H);
     }
     else console.error('Level image not loaded');
-
-    let allColors = findAllColors();
-    console.log("Displayed colors", allColors);
-    console.log("Actual colors", COLORS);
-
+    
     if (current_level != 0) {
         playerInfo = findPlayerPositionAndLength();
         if (playerInfo) {
@@ -126,6 +123,18 @@ function draw() {
         loadNextLevel();
     }
 
+    // Load solidmask pixels into memory so it can be used this frame.
+    solidMask.loadPixels();
+
+    if (passthroughHit) {
+        // change passthrough color and background color
+        changeColors(COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length])
+        changeColors(COLORS[background_color_index], COLORS[background_color_index + 1 % COLORS.length])
+        updateColorScheme(player_color_index + 1 % COLORS.length)
+        passthroughHit = false;
+        // change player color
+    }
+
     // Draw player on Display Layer
     if (player.x !== -1 && player.y !== -1) {
         displayLayer.noStroke();
@@ -135,9 +144,6 @@ function draw() {
         displayLayer.rectMode(CORNER);  
     }
 
-    // Load solidmask pixels into memory so it can be used this frame.
-    solidMask.loadPixels();
-
     // Draw oldest player trail position on solidMask
     if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) || Math.round(trail[0].y) !== Math.round(player.y))) {
         solidMask.noStroke();
@@ -145,11 +151,11 @@ function draw() {
         solidMask.rectMode(CORNER);   
         solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
         solidMask.rectMode(CORNER);
-        // displayLayer.noStroke();
-        // displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
-        // displayLayer.rectMode(CORNER);   
-        // displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
-        // displayLayer.rectMode(CORNER);
+        displayLayer.noStroke();
+        displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
+        displayLayer.rectMode(CORNER);   
+        displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
+        displayLayer.rectMode(CORNER);
     }
 
     // Draw player on solidMask to carve out the player's area
@@ -284,4 +290,23 @@ function handleStartScreen() {
 	displayLayer.image(displayImg, 0, 0, width, height);
 	displayLayer.noTint();
 	displayLayer.pop();
+}
+
+function changeColors(oldColor, newColor) {
+    displayLayer.loadPixels();
+    for (let i = 0; i < displayLayer.pixels.length; i += 4) {
+        const r = displayLayer.pixels[i];
+        const g = displayLayer.pixels[i + 1];
+        const b = displayLayer.pixels[i + 2];
+        if (isCloseToColor(r, g, b, oldColor)) {
+            displayLayer.pixels[i] = newColor[0];
+            displayLayer.pixels[i + 1] = newColor[1];
+            displayLayer.pixels[i + 2] = newColor[2];
+            solidMask.pixels[i] = newColor[0];
+            solidMask.pixels[i + 1] = newColor[1];
+            solidMask.pixels[i + 2] = newColor[2];
+        }
+    }
+    solidMask.updatePixels();
+    displayLayer.updatePixels();
 }
