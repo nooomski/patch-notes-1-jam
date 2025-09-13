@@ -38,6 +38,10 @@ function preload() {
     displayImg = loadImage(MAPS[current_level].img)
     player_color_index = MAPS[current_level].color_index
     updateColorScheme(player_color_index)
+    // Load any-key images
+    keyA = loadImage('Levels/a.png')
+    keyN = loadImage('Levels/n.png')
+    keyY = loadImage('Levels/y.png')
 }
 
 function updateColorScheme(player_index) {
@@ -47,11 +51,6 @@ function updateColorScheme(player_index) {
     background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
     const bg = COLORS[background_color_index];
     document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
-
-    // Load any-key images
-    keyA = loadImage('Levels/a.png')
-    keyN = loadImage('Levels/n.png')
-    keyY = loadImage('Levels/y.png')
 }
 
 function loadNextLevel() {

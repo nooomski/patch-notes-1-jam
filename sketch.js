@@ -77,6 +77,8 @@ function resetLevel() {
     }
     else console.error('Level image not loaded');
 
+    updateColorScheme(MAPS[current_level].color_index);
+
     if (current_level != 0) {
         playerInfo = findPlayerPositionAndLength();
         if (playerInfo) {
