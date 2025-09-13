@@ -203,7 +203,7 @@ function findPlayerPositionAndLength() {
             const r = displayLayer.pixels[idx];
             const g = displayLayer.pixels[idx + 1];
             const b = displayLayer.pixels[idx + 2];
-            // console.log("Checking pixel", x, y, r, g, b);
+            console.log("Checking pixel", x, y, r, g, b);
             if (isPlayerColor(r, g, b)) {
                 if (!start) {
                     start = true;
@@ -216,5 +216,5 @@ function findPlayerPositionAndLength() {
             }
         }
     }
-    throw new Error("Player not found in display layer");
+    return null;
 }

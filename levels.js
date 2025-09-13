@@ -1,24 +1,27 @@
 
 
 const COLORS = [
-    [255, 0, 0], // RED
-    [255, 128, 0], // ORANGE
-    [255, 255, 0], // YELLOW
-    [0, 255, 0], // GREEN
-    [0, 255, 255], // CYAN
-    [0, 0, 255], // BLUE
-    [255, 0, 255], // MAGENTA
-    [0, 0, 0] // BLACK
+    [239, 100, 93],
+    [224, 136, 65],
+    [219, 192, 99],
+    [121, 134, 46],
+    [63, 214, 119],
+    [66, 168, 199],
+    [14, 15, 66],
+    [177, 117, 219]
 ]
 
 const MAPS = [
-    {img: 'level.png', color_index: 4},
-    {img: 'level.png', color_index: 4},
-    {img: 'level.png', color_index: 4},
+    {img: 'Levels/level1.png', color_index: 5},
+    {img: 'Levels/level2.png', color_index: 5},
+    {img: 'Levels/level3.png', color_index: 1},
+    {img: 'Levels/level4.png', color_index: 1},
+    {img: 'Levels/level5.png', color_index: 4},
+    {img: 'Levels/level6.png', color_index: 2},
 ]
 
 var current_level = 0
-var map_color_index = 4
+var map_color_index = 0
 
 const PASSTHROUGH_OFFSET = 1
 const GOAL_OFFSET = 2
