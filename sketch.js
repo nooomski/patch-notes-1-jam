@@ -20,6 +20,7 @@ const JUMP_VELOCITY   = -30.0;
 
 const SCREENSHAKE_INTENSITY = 20;
 const SCREENSHAKE_MAX_FRAMES = 10;
+const DEGUB_MODE = false;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
@@ -75,7 +76,7 @@ function resetLevel() {
         solidMask.image(displayImg, 0, 0, W, H);
     }
     else console.error('Level image not loaded');
-    
+
     if (current_level != 0) {
         playerInfo = findPlayerPositionAndLength();
         if (playerInfo) {
@@ -150,12 +151,12 @@ function draw() {
         solidMask.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
         solidMask.rectMode(CORNER);   
         solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
-        solidMask.rectMode(CORNER);
-        displayLayer.noStroke();
-        displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
-        displayLayer.rectMode(CORNER);   
-        displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
-        displayLayer.rectMode(CORNER);
+        if (DEGUB_MODE) {
+            displayLayer.noStroke();
+            displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
+            displayLayer.rectMode(CORNER);   
+            displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
+        }
     }
 
     // Draw player on solidMask to carve out the player's area
@@ -175,7 +176,7 @@ function draw() {
         let t = totalSeconds-startTime;
         displayLayer.text("TIME: " + t, 20,20);
     }
-    else {
+    if (current_level == 0) {
         handleStartScreen();
     }
 
