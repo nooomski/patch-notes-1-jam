@@ -32,18 +32,6 @@ const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
 const TOLERANCE = 8
 
-let keyA, keyN, keyY;
-
-function preload() {
-    displayImg = loadImage(MAPS[current_level].img)
-    player_color_index = MAPS[current_level].color_index
-    updateColorScheme(player_color_index)
-    // Load any-key images
-    keyA = loadImage('Levels/a.png')
-    keyN = loadImage('Levels/n.png')
-    keyY = loadImage('Levels/y.png')
-}
-
 function updateColorScheme(player_index) {
     player_color_index = player_index
     passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
@@ -76,6 +64,61 @@ function loadNextLevel() {
     } catch (error) {
         console.error("Error loading level image", error)
     }
+}
+
+function resetLevel() {
+    // Clear layers
+    displayLayer.clear(); // keep transparent so we can draw exactly what we want
+    solidMask.clear();
+
+    if (displayImg) {
+        displayLayer.image(displayImg, 0, 0, W, H);
+        solidMask.image(displayImg, 0, 0, W, H);
+    }
+    else console.error('Level image not loaded');
+
+    updateColorScheme(MAPS[current_level].color_index);
+
+    if (current_level != 0) {
+        playerInfo = findPlayerPositionAndLength();
+        if (playerInfo) {
+            console.log("Player found in display layer", playerInfo);
+            originalPlayerPosition.x = playerInfo.x;
+            originalPlayerPosition.y = playerInfo.y;
+            player.x = originalPlayerPosition.x;
+            player.y = originalPlayerPosition.y;
+            player.w = playerInfo.length;
+            player.h = playerInfo.length; // assuming square
+        } else {
+            console.error('Player not found in display layer');
+        }
+    }  
+    player.vx = 0;  player.vy = 0;
+    player.onGround = false;
+
+    // Draw a square the size of the player in the background color at the player's position on the solidMask
+    solidMask.noStroke();
+    solidMask.fill(
+        COLORS[background_color_index][0],
+        COLORS[background_color_index][1],
+        COLORS[background_color_index][2]
+    );
+    solidMask.rectMode(CORNER);
+    solidMask.rect(player.x, player.y, player.w, player.h);
+    solidMask.rectMode(CORNER);
+
+
+    //player.coyote = 0;
+    //player.jumpBuf = 0;
+    //player.lastX = player.x; player.lastY = player.y;
+
+    trail.length = 0;
+    image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
+    goalHit = false;
+    passthroughHit = false;
+    setTimeout(() => { loadingNextLevel = false; }, 1000);
+
+    shakeScreen(SCREENSHAKE_MAX_FRAMES);
 }
 
 function isPlayerColor(r, g, b) {

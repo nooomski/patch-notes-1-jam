@@ -4,7 +4,7 @@ const W = 960, H = 640;
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
 const TRAIL_MAX_LENGTH= 20;    // frames before trail turns solid
-const MAX_STEP_UP     = 32;     // max px to "walk up" slopes
+const MAX_STEP_UP     = 16;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
 const AIR_DRAG        = 0.02;
@@ -45,9 +45,25 @@ let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
 let startTime = 0;
 let loadingNextLevel = false;
+let shaderColor;
+let ox = 1.8; 
+let oy = -0.8;
+let keyA, keyN, keyY;
+
+function preload() {
+    displayImg = loadImage(MAPS[current_level].img)
+    player_color_index = MAPS[current_level].color_index
+    updateColorScheme(player_color_index)
+    // Load any-key images
+    keyA = loadImage('Levels/a.png')
+    keyN = loadImage('Levels/n.png')
+    keyY = loadImage('Levels/y.png')
+
+    shaderColor = loadShader('shaderColor.vert', 'shaderColor.frag');
+}
 
 function setup() {
-	cnv = createCanvas(W, H);
+	cnv = createCanvas(windowWidth, windowHeight, WEBGL);
 	pixelDensity(1);
     noSmooth();
 
@@ -65,62 +81,9 @@ function setup() {
 
 function windowResized() {
     fitCanvas();
-  }
-
-function resetLevel() {
-    // Clear layers
-    displayLayer.clear(); // keep transparent so we can draw exactly what we want
-    solidMask.clear();
-
-    if (displayImg) {
-        displayLayer.image(displayImg, 0, 0, W, H);
-        solidMask.image(displayImg, 0, 0, W, H);
-    }
-    else console.error('Level image not loaded');
-
-    updateColorScheme(MAPS[current_level].color_index);
-
-    if (current_level != 0) {
-        playerInfo = findPlayerPositionAndLength();
-        if (playerInfo) {
-            console.log("Player found in display layer", playerInfo);
-            originalPlayerPosition.x = playerInfo.x;
-            originalPlayerPosition.y = playerInfo.y;
-            player.x = originalPlayerPosition.x;
-            player.y = originalPlayerPosition.y;
-            player.w = playerInfo.length;
-            player.h = playerInfo.length; // assuming square
-        } else {
-            console.error('Player not found in display layer');
-        }
-    }  
-    player.vx = 0;  player.vy = 0;
-    player.onGround = false;
-
-    // Draw a square the size of the player in the background color at the player's position on the solidMask
-    solidMask.noStroke();
-    solidMask.fill(
-        COLORS[background_color_index][0],
-        COLORS[background_color_index][1],
-        COLORS[background_color_index][2]
-    );
-    solidMask.rectMode(CORNER);
-    solidMask.rect(player.x, player.y, player.w, player.h);
-    solidMask.rectMode(CORNER);
-
-
-    //player.coyote = 0;
-    //player.jumpBuf = 0;
-    //player.lastX = player.x; player.lastY = player.y;
-
-    trail.length = 0;
-    image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
-    goalHit = false;
-    passthroughHit = false;
-    setTimeout(() => { loadingNextLevel = false; }, 1000);
-
-    shakeScreen(SCREENSHAKE_MAX_FRAMES);
 }
+
+
 
 function draw() {
     if (keyIsDown(82)) resetLevel(); // R to reset
@@ -142,6 +105,7 @@ function draw() {
     solidMask.loadPixels();
 
     if (passthroughHit) {
+        shakeScreen(SCREENSHAKE_MAX_FRAMES);
         // change passthrough color and background color
         console.log("Changing colors", COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length]);
         changeColors(COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length])
@@ -188,8 +152,8 @@ function draw() {
         displayLayer.textSize(40);
         displayLayer.textAlign(LEFT, TOP);
 
-        let totalSeconds = floor(millis() / 1000);
-        let t = totalSeconds-startTime;
+        let totalSeconds = round(millis() / 1000);
+        let t = round(totalSeconds-startTime);
         displayLayer.text("TIME: " + t, 20,20);
     }
     if (current_level == 0) {
@@ -207,9 +171,27 @@ function draw() {
         screenShakeY = 0;
     }
 
+    // Do post stuff
+    shader(shaderColor);
+    // Walk offset
+    let z = min(30,screenShakeCounter)* ((round(random(5))/5) ? 1 : 10);
+    ox += -z/2 + random(z);
+    oy += -z/2 + random(z);
+    ox *= .90;
+    oy *= .90;
+    // Apply shader
+    shaderColor.setUniform("uTexture", displayLayer);
+    shaderColor.setUniform("uOffset", [ox/2000, oy/2000]);
+    shaderColor.setUniform("uTime", frameCount%1000);
+    // Draw rect to force shader to be applied
+    push();
+        noStroke();
+        rect(0,0,width,height);
+    pop();
+    resetShader();
 
     // Draw Display Layer
-    image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
+    //image(displayLayer, -W/2 - SCREENSHAKE_INTENSITY/2+screenShakeX, -H/2 - SCREENSHAKE_INTENSITY/2+screenShakeY);
 }
 
 function fitCanvas() {
@@ -285,15 +267,15 @@ function handleStartScreen() {
     // Draw key images based on which key is pressed
     if (keyIsDown(65) || keyIsDown(97)) { // 'A' or 'a'
         a = true;
-		displayLayer.image(keyA, 0, 0, width, height);
+		displayLayer.image(keyA, 0, 0, W, H);
     }
 	if (keyIsDown(78) || keyIsDown(110)) { // 'N' or 'n'
         n = true;
-		displayLayer.image(keyN, 0, 0, width, height);
+		displayLayer.image(keyN, 0, 0, W, H);
     }
 	if (keyIsDown(89) || keyIsDown(121)) { // 'Y' or 'y'
         y = true;
-		displayLayer.image(keyY, 0, 0, width, height);
+		displayLayer.image(keyY, 0, 0, W, H);
 	}
     if (a && n && y) {
         loadNextLevel();
@@ -305,7 +287,7 @@ function handleStartScreen() {
 	// Redraw level on top transparently so the previous key images fade out
 	displayLayer.push();
 	displayLayer.tint(255, 32);
-	displayLayer.image(displayImg, 0, 0, width, height);
+	displayLayer.image(displayImg, 0, 0, W, H);
 	displayLayer.noTint();
 	displayLayer.pop();
 }
