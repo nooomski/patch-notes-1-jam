@@ -39,7 +39,6 @@ let cnv;
 let displayLayer, solidMask;
 let screenShakeX = 0, screenShakeY = 0;
 let screenShakeCounter = 0;
-let glitch;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
 
@@ -56,10 +55,8 @@ function setup() {
     solidMask = createGraphics(W, H);
     solidMask.pixelDensity(1);
 
-    glitch = new Glitch();
-    glitch.loadType('jpg');
-
     resetLevel();
+    initAudio();
     fitCanvas();
 }
 
@@ -146,11 +143,11 @@ function draw() {
         solidMask.rectMode(CORNER);   
         solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
         solidMask.rectMode(CORNER);
-        displayLayer.noStroke();
-        displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
-        displayLayer.rectMode(CORNER);   
-        displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
-        displayLayer.rectMode(CORNER);
+        // displayLayer.noStroke();
+        // displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
+        // displayLayer.rectMode(CORNER);   
+        // displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
+        // displayLayer.rectMode(CORNER);
     }
 
     // Draw player on solidMask to carve out the player's area
