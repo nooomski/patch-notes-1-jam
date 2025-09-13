@@ -11,11 +11,38 @@ const COLORS = [
     [0, 0, 0] // BLACK
 ]
 
+const MAPS = [
+    {img: 'level.png', color_index: 4},
+    {img: 'level.png', color_index: 4},
+    {img: 'level.png', color_index: 4},
+]
+
+var current_level = 0
 var map_color_index = 4
 
 const PASSTHROUGH_OFFSET = 1
 const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
+
+function preload() {
+    displayImg = loadImage(MAPS[current_level].img)
+    map_color_index = MAPS[current_level].color_index
+}
+
+function loadNextLevel() {
+    current_level++
+    if (current_level >= MAPS.length) {
+        current_level = 0
+    }
+    try {
+        displayImg = loadImage(MAPS[current_level].img, () => {
+            map_color_index = MAPS[current_level].color_index
+            resetLevel()
+        })
+    } catch (error) {
+        console.error("Error loading level image", error)
+    }
+}
 
 function isPlayerColor(r, g, b) {
     if (r === COLORS[map_color_index][0] && g === COLORS[map_color_index][1] && b === COLORS[map_color_index][2]) {

@@ -3,7 +3,6 @@ function movePlayer() {
     const left  = keyIsDown(LEFT_ARROW)  || keyIsDown(65);  // LEFT / A
     const right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);  // RIGHT / D
     const jump  = keyIsDown(32) || keyIsDown(87) || keyIsDown(UP_ARROW); // SPACE / W / UP
-    if (keyIsDown(82)) resetLevel(); // R to reset
 
     // Horizontal acceleration
     const targetAx = (right - left) * RUN_ACCEL;
@@ -99,7 +98,7 @@ function isBoxFree(x, y, w, h) {
             const b = solidMask.pixels[idx + 2];
 
             if (isGoalColor(r, g, b)) {
-                doorHit = true;
+                goalHit = true;
             }
 
             if (!isBackgroundColor(r, g, b)) {

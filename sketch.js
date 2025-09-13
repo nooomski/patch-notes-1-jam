@@ -34,18 +34,14 @@ const player = {
 
 // Globals
 let trail = [{x: 0, y: 0}];
-let doorHit = false;
+let goalHit = false;
 let cnv;
 let displayLayer, solidMask;
 let screenShakeX = 0, screenShakeY = 0;
 let screenShakeCounter = 0;
 let glitch;
-let levelImg;
+let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
-
-function preload() {
-    levelImg = loadImage('level.png');
-}
 
 function setup() {
 	cnv = createCanvas(W, H);
@@ -76,19 +72,21 @@ function resetLevel() {
     displayLayer.clear(); // keep transparent so we can draw exactly what we want
     solidMask.clear();
 
-    if (levelImg) {
-        displayLayer.image(levelImg, 0, 0, W, H);
-        solidMask.image(levelImg, 0, 0, W, H);
+    if (displayImg) {
+        displayLayer.image(displayImg, 0, 0, W, H);
+        solidMask.image(displayImg, 0, 0, W, H);
     }
     else console.error('Level image not loaded');
 
     playerInfo = findPlayerPositionAndLength();
-    originalPlayerPosition.x = playerInfo.x;
-    originalPlayerPosition.y = playerInfo.y;
-    player.x = originalPlayerPosition.x;
-    player.y = originalPlayerPosition.y;
-    player.w = playerInfo.length;
-    player.h = playerInfo.length; // assuming square
+    if (playerInfo) {
+        originalPlayerPosition.x = playerInfo.x;
+        originalPlayerPosition.y = playerInfo.y;
+        player.x = originalPlayerPosition.x;
+        player.y = originalPlayerPosition.y;
+        player.w = playerInfo.length;
+        player.h = playerInfo.length; // assuming square
+    }
     player.vx = 0;  player.vy = 0;
     player.onGround = false;
 
@@ -110,13 +108,18 @@ function resetLevel() {
     //player.lastX = player.x; player.lastY = player.y;
 
     trail.length = 0;
-    doorHit = false;
+    goalHit = false;
 
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
 }
 
 function draw() {
+    if (keyIsDown(82)) resetLevel(); // R to reset
     movePlayer();
+
+    if (goalHit) {
+        loadNextLevel();
+    }
 
     // Draw player on Display Layer
     if (player.x !== -1 && player.y !== -1) {
@@ -213,6 +216,5 @@ function findPlayerPositionAndLength() {
             }
         }
     }
-    console.log("Player not found");
-    return null;
+    throw new Error("Player not found in display layer");
 }
