@@ -48,6 +48,12 @@ function drawRGBSplit(src, i) {
         image(src, random(-p, p), random(-p, p));
 
         blendMode(BLEND);
+
+        if (current_level == 0 && anyKeyTries > 5) {
+            tint(255, 255, 255, 170);
+            image(keyHelper, 0, 0);
+        }
+
         noTint();
     }
     pop();

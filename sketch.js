@@ -43,7 +43,7 @@ let originalPlayerPosition = {x: -1, y: -1};
 let loadingNextLevel = false;
 
 let startTime = 0;
-let keyA, keyN, keyY;
+let keyA, keyN, keyY, keyHelper;
 let anyKeyTries = 0;
 
 function preload() {
@@ -54,6 +54,7 @@ function preload() {
     keyA = loadImage('Levels/a.png')
     keyN = loadImage('Levels/n.png')
     keyY = loadImage('Levels/y.png')
+    keyHelper = loadImage('Levels/anyHelper.png')
 }
 
 function setup() {
