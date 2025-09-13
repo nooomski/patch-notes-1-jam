@@ -1,7 +1,7 @@
 
 
 const COLORS = [
-    [239, 100, 93],
+    [239, 69, 66],
     [224, 136, 65],
     [219, 192, 99],
     [121, 134, 46],
@@ -14,13 +14,13 @@ const COLORS = [
 const MAPS = [
     {img: 'Levels/level1.png', color_index: 5},
     {img: 'Levels/level2.png', color_index: 5},
-    {img: 'Levels/level3.png', color_index: 1},
-    {img: 'Levels/level4.png', color_index: 1},
-    {img: 'Levels/level5.png', color_index: 4},
-    {img: 'Levels/level6.png', color_index: 2},
+    {img: 'Levels/level3.png', color_index: 0},
+    {img: 'Levels/level4.png', color_index: 0},
+    {img: 'Levels/level5.png', color_index: 3},
+    {img: 'Levels/level6.png', color_index: 1},
 ]
 
-var current_level = 0
+var current_level = 4
 var player_color_index = 0
 var passthrough_color_index = 0
 var goal_color_index = 0
@@ -37,6 +37,8 @@ function preload() {
     passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
     goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
     background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
+    const bg = COLORS[background_color_index];
+    document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
 }
 
 function loadNextLevel() {
@@ -50,6 +52,8 @@ function loadNextLevel() {
             passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
             goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
             background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
+            const bg = COLORS[background_color_index];
+            document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
             resetLevel()
         })
     } catch (error) {

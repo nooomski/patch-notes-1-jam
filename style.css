@@ -1,7 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    background-color: #606060;
+    background-color: var(background-color);
   }
   canvas {
     display: block;
