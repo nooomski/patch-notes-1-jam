@@ -7,6 +7,54 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "level1.tmx": {
+            "scale": 0.58,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 511.2068965517242,
+                "y": 454.31034482758616
+            }
+        },
+        "level2.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.2574120891749,
+                "y": 365.52516662836126
+            }
+        },
+        "level3.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 546.4490921627212,
+                "y": 328.75201103194667
+            }
+        },
+        "level4.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.2574120891749,
+                "y": 319.92645368880716
+            }
+        },
+        "level5.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.2574120891749,
+                "y": 319.92645368880716
+            }
+        },
+        "level6.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.2574120891749,
+                "y": 319.92645368880716
+            }
+        }
     },
     "last.imagePath": "/Users/noam/Code/Games/patch-notes-1-jam/Levels",
     "map.lastUsedFormat": "tmx",
