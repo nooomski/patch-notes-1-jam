@@ -20,7 +20,7 @@ const MAPS = [
     {img: 'Levels/level6.png', color_index: 1},
 ]
 
-var current_level = 4
+var current_level = 0
 var player_color_index = 0
 var passthrough_color_index = 0
 var goal_color_index = 0
