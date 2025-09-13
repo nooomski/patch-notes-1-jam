@@ -102,6 +102,7 @@ function isBoxFree(x, y, w, h) {
             }
 
             if (!isBackgroundColor(r, g, b)) {
+                // console.log("Blocked by non-background color", r, g, b);
                 return false;
             }
         }

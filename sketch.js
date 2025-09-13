@@ -1,5 +1,5 @@
 // CANVAS SIZE
-const W = 1200, H = 800;
+const W = 960, H = 640;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
@@ -78,21 +78,27 @@ function resetLevel() {
     }
     else console.error('Level image not loaded');
 
+    let allColors = findAllColors();
+    console.log("Displayed colors", allColors);
+    console.log("Actual colors", COLORS);
+
     playerInfo = findPlayerPositionAndLength();
     if (playerInfo) {
+        console.log("Player found in display layer", playerInfo);
         originalPlayerPosition.x = playerInfo.x;
         originalPlayerPosition.y = playerInfo.y;
         player.x = originalPlayerPosition.x;
         player.y = originalPlayerPosition.y;
         player.w = playerInfo.length;
         player.h = playerInfo.length; // assuming square
+    } else {
+        console.error('Player not found in display layer');
     }
     player.vx = 0;  player.vy = 0;
     player.onGround = false;
 
     // Draw a square the size of the player in the background color at the player's position on the solidMask
     solidMask.noStroke();
-    let background_color_index = (map_color_index + BACKGROUND_OFFSET) % COLORS.length;
     solidMask.fill(
         COLORS[background_color_index][0],
         COLORS[background_color_index][1],
@@ -124,7 +130,7 @@ function draw() {
     // Draw player on Display Layer
     if (player.x !== -1 && player.y !== -1) {
         displayLayer.noStroke();
-        displayLayer.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+        displayLayer.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
         displayLayer.rectMode(CORNER);   
         displayLayer.rect(player.x, player.y, player.w, player.h);
         displayLayer.rectMode(CORNER);  
@@ -136,12 +142,12 @@ function draw() {
     // Draw oldest player trail position on solidMask
     if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) || Math.round(trail[0].y) !== Math.round(player.y))) {
         solidMask.noStroke();
-        solidMask.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+        solidMask.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
         solidMask.rectMode(CORNER);   
         solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
         solidMask.rectMode(CORNER);
         displayLayer.noStroke();
-        displayLayer.fill(COLORS[map_color_index+1][0], COLORS[map_color_index+1][1], COLORS[map_color_index+1][2]);
+        displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
         displayLayer.rectMode(CORNER);   
         displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
         displayLayer.rectMode(CORNER);
@@ -149,8 +155,7 @@ function draw() {
 
     // Draw player on solidMask to carve out the player's area
     solidMask.noStroke();
-    let i = (map_color_index+BACKGROUND_OFFSET)%COLORS.length
-    solidMask.fill(COLORS[i][0], COLORS[i][1], COLORS[i][2]);
+    solidMask.fill(COLORS[background_color_index][0], COLORS[background_color_index][1], COLORS[background_color_index][2]);
     solidMask.rectMode(CORNER);   
     solidMask.rect(player.x, player.y, player.w, player.h);
     solidMask.rectMode(CORNER);
@@ -211,7 +216,7 @@ function findPlayerPositionAndLength() {
             const r = displayLayer.pixels[idx];
             const g = displayLayer.pixels[idx + 1];
             const b = displayLayer.pixels[idx + 2];
-            console.log("Checking pixel", x, y, r, g, b);
+            // console.log("Checking pixel", x, y, r, g, b);
             if (isPlayerColor(r, g, b)) {
                 if (!start) {
                     start = true;
@@ -225,4 +230,23 @@ function findPlayerPositionAndLength() {
         }
     }
     return null;
+}
+
+function findAllColors() {
+    displayLayer.loadPixels();
+    let colors = [];
+    for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+            const idx = 4 * (y * W + x);
+            const r = displayLayer.pixels[idx];
+            const g = displayLayer.pixels[idx + 1];
+            const b = displayLayer.pixels[idx + 2];
+            // Check if this color is already in the list
+            let exists = colors.some(c => c[0] === r && c[1] === g && c[2] === b);
+            if (!exists) {
+                colors.push([r, g, b]);
+            }
+        }
+    }
+    return colors;
 }

@@ -21,15 +21,22 @@ const MAPS = [
 ]
 
 var current_level = 0
-var map_color_index = 0
+var player_color_index = 0
+var passthrough_color_index = 0
+var goal_color_index = 0
+var background_color_index = 0
 
 const PASSTHROUGH_OFFSET = 1
 const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
+const TOLERANCE = 10
 
 function preload() {
     displayImg = loadImage(MAPS[current_level].img)
-    map_color_index = MAPS[current_level].color_index
+    player_color_index = MAPS[current_level].color_index
+    passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
+    goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
+    background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
 }
 
 function loadNextLevel() {
@@ -39,7 +46,10 @@ function loadNextLevel() {
     }
     try {
         displayImg = loadImage(MAPS[current_level].img, () => {
-            map_color_index = MAPS[current_level].color_index
+            player_color_index = MAPS[current_level].color_index
+            passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
+            goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
+            background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
             resetLevel()
         })
     } catch (error) {
@@ -48,32 +58,32 @@ function loadNextLevel() {
 }
 
 function isPlayerColor(r, g, b) {
-    if (r === COLORS[map_color_index][0] && g === COLORS[map_color_index][1] && b === COLORS[map_color_index][2]) {
-        return true
-    }
-    return false
+    const target = COLORS[player_color_index];
+    return isCloseToColor(r, g, b, target);
 }
 
 function isPassthroughColor(r, g, b) {
-    let passthrough_color_index = (map_color_index + PASSTHROUGH_OFFSET) % COLORS.length
-    if (r === COLORS[passthrough_color_index][0] && g === COLORS[passthrough_color_index][1] && b === COLORS[passthrough_color_index][2]) {
-        return true
-    }
-    return false
+    const target = COLORS[passthrough_color_index];
+    return isCloseToColor(r, g, b, target);
 }
 
 function isGoalColor(r, g, b) {
-    let goal_color_index = (map_color_index + GOAL_OFFSET) % COLORS.length
-    if (r === COLORS[goal_color_index][0] && g === COLORS[goal_color_index][1] && b === COLORS[goal_color_index][2]) {
-        return true
-    }
-    return false
+    const target = COLORS[goal_color_index];
+    return isCloseToColor(r, g, b, target);
 }
 
 function isBackgroundColor(r, g, b) {
-    let background_color_index = (map_color_index + BACKGROUND_OFFSET) % COLORS.length
-    if (r === COLORS[background_color_index][0] && g === COLORS[background_color_index][1] && b === COLORS[background_color_index][2]) {
-        return true
+    const target = COLORS[background_color_index];
+    return isCloseToColor(r, g, b, target);
+}
+
+function isCloseToColor(r, g, b, target) {
+    if (
+        Math.abs(r - target[0]) <= TOLERANCE &&
+        Math.abs(g - target[1]) <= TOLERANCE &&
+        Math.abs(b - target[2]) <= TOLERANCE
+    ) {
+        return true;
     }
-    return false
+    return false;
 }
