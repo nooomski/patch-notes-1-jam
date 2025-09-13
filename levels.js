@@ -44,6 +44,7 @@ function updateColorScheme(player_index) {
 function loadNextLevel() {
     if (current_level == 0) {
         startTime = floor(millis()) / 1000;
+        anyKeyTries = 0;
         initAudio();
     }
     current_level++

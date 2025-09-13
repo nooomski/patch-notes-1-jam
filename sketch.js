@@ -18,8 +18,6 @@ const JUMP_VELOCITY   = -30.0;
 //const HITBOX_SIZE     = 12;
 //const COLOR_SOLID     = [0];
 
-const SCREENSHAKE_INTENSITY = 20;
-const SCREENSHAKE_MAX_FRAMES = 10;
 const DEGUB_MODE = false;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
@@ -39,16 +37,14 @@ let goalHit = false;
 let passthroughHit = false;
 let cnv;
 let displayLayer, solidMask;
-let screenShakeX = 0, screenShakeY = 0;
-let screenShakeCounter = 0;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
-let startTime = 0;
+
 let loadingNextLevel = false;
-let shaderColor;
-let ox = 1.8; 
-let oy = -0.8;
+
+let startTime = 0;
 let keyA, keyN, keyY;
+let anyKeyTries = 0;
 
 function preload() {
     displayImg = loadImage(MAPS[current_level].img)
@@ -58,22 +54,22 @@ function preload() {
     keyA = loadImage('Levels/a.png')
     keyN = loadImage('Levels/n.png')
     keyY = loadImage('Levels/y.png')
-
-    shaderColor = loadShader('shaderColor.vert', 'shaderColor.frag');
 }
 
 function setup() {
-	cnv = createCanvas(windowWidth, windowHeight, WEBGL);
+	cnv = createCanvas(W, H);
 	pixelDensity(1);
     noSmooth();
 
     // Layer that's visualized
     displayLayer = createGraphics(W, H);
     displayLayer.pixelDensity(1);
+    displayLayer.noSmooth();
     
     // Layer that only contains solids (e.g. no trail)
     solidMask = createGraphics(W, H);
     solidMask.pixelDensity(1);
+    solidMask.noSmooth();
 
     resetLevel();
     fitCanvas();
@@ -83,16 +79,9 @@ function windowResized() {
     fitCanvas();
 }
 
-
-
 function draw() {
-    if (keyIsDown(82)) resetLevel(); // R to reset
-    
 
-    if (!loadingNextLevel) {
-        movePlayer();
-    }
-
+    if (!loadingNextLevel) movePlayer();
 
     if (goalHit) {
         loadingNextLevel = true;
@@ -160,38 +149,12 @@ function draw() {
         handleStartScreen();
     }
 
-    // Screen Shake
-    if (screenShakeCounter > 0) {
-        let intensity = SCREENSHAKE_INTENSITY * (screenShakeCounter / SCREENSHAKE_MAX_FRAMES);
-        screenShakeX = random(-intensity/2, intensity/2);
-        screenShakeY = random(-intensity/2, intensity/2);
-        screenShakeCounter--;
-    } else {
-        screenShakeX = 0;
-        screenShakeY = 0;
-    }
-
-    // Do post stuff
-    shader(shaderColor);
-    // Walk offset
-    let z = min(30,screenShakeCounter)* ((round(random(5))/5) ? 1 : 10);
-    ox += -z/2 + random(z);
-    oy += -z/2 + random(z);
-    ox *= .90;
-    oy *= .90;
-    // Apply shader
-    shaderColor.setUniform("uTexture", displayLayer);
-    shaderColor.setUniform("uOffset", [ox/2000, oy/2000]);
-    shaderColor.setUniform("uTime", frameCount%1000);
-    // Draw rect to force shader to be applied
-    push();
-        noStroke();
-        rect(0,0,width,height);
-    pop();
-    resetShader();
+    handleScreenShake();
 
     // Draw Display Layer
-    //image(displayLayer, -W/2 - SCREENSHAKE_INTENSITY/2+screenShakeX, -H/2 - SCREENSHAKE_INTENSITY/2+screenShakeY);
+    image(displayLayer, screenShakeX, screenShakeY);
+    drawRGBSplit(displayLayer, screenShakeCounter + current_level/2);
+    
 }
 
 function fitCanvas() {
@@ -209,10 +172,6 @@ function fitCanvas() {
       Math.floor((windowWidth - cssW) / 2),
       Math.floor((windowHeight - cssH) / 2)
     );
-}
-
-function shakeScreen(intensity) {
-    screenShakeCounter = intensity;
 }
 
 function findPlayerPositionAndLength() {
@@ -281,9 +240,6 @@ function handleStartScreen() {
         loadNextLevel();
     }
 
-    if (keyIsPressed && !a && !n && !y) {
-        shakeScreen(SCREENSHAKE_MAX_FRAMES/2);
-    }
 	// Redraw level on top transparently so the previous key images fade out
 	displayLayer.push();
 	displayLayer.tint(255, 32);
@@ -309,4 +265,17 @@ function changeColors(oldColor, newColor) {
     }
     solidMask.updatePixels();
     displayLayer.updatePixels();
+}
+
+function keyPressed() {
+    let k = key.toLowerCase();
+    if (current_level != 0) {
+        if (k === 'r') {
+            resetLevel(); // runs once per press
+        }
+    }
+    else if ((k !== 'a') && (k !== 'n') && (k !== 'y')) {
+        shakeScreen(Math.min(SCREENSHAKE_MAX_FRAMES * 2, SCREENSHAKE_MAX_FRAMES / 2 + anyKeyTries / 4));
+        anyKeyTries++;
+    }
 }
