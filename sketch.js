@@ -1,5 +1,4 @@
 const W = 1440, H = 1080;
-let glitch;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
@@ -19,6 +18,9 @@ const PLAYER_SIZE     = 64;
 //const HITBOX_SIZE     = 12;
 //const COLOR_SOLID     = [0];
 
+const SCREENSHAKE_INTENSITY = 20;
+const SCREENSHAKE_MAX_FRAMES = 10;
+
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
     x: 160, y: 120,
@@ -30,28 +32,37 @@ const player = {
     //lastX: 160, lastY: 120
 };
 
+// Globals
 let trail = [{x: 0, y: 0}];
 let doorHit = false;
+let cnv;
+let displayLayer, solidMask;
+let screenShakeX = 0, screenShakeY = 0;
+let screenShakeCounter = 0;
+let glitch;
+let levelImg;
 
 function preload() {
     levelImg = loadImage('level.png');
 }
 
 function setup() {
-	cnv = createCanvas(W, H);
+	cnv = createCanvas(W-SCREENSHAKE_INTENSITY, H-SCREENSHAKE_INTENSITY);
 	pixelDensity(1);
     noSmooth();
-    glitch = new Glitch();
 
     // Layer that's visualized
     displayLayer = createGraphics(W, H);
     displayLayer.pixelDensity(1);
+    
     // Layer that only contains solids (e.g. no trail)
     solidMask = createGraphics(W, H);
     solidMask.pixelDensity(1);
 
-    resetLevel();
+    glitch = new Glitch();
+    glitch.loadType('jpg');
 
+    resetLevel();
     fitCanvas();
 }
 
@@ -84,15 +95,15 @@ function resetLevel() {
 function draw() {
     movePlayer();
 
-    // Load solidmask pixels into memory so it can be used this frame.
-    solidMask.loadPixels();
-
     // Draw player on Display Layer
     displayLayer.noStroke();
     displayLayer.fill(218, 232, 252);
     displayLayer.rectMode(CORNER);   
     displayLayer.rect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
     displayLayer.rectMode(CORNER);
+
+    // Load solidmask pixels into memory so it can be used this frame.
+    solidMask.loadPixels();
 
     // Draw oldest player trail position on solidMask
     if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) && Math.round(trail[0].y) !== Math.round(player.y))) {
@@ -111,17 +122,20 @@ function draw() {
     let totalSeconds = floor(millis() / 1000);
     displayLayer.text("TIME: " + totalSeconds, 20,20);
 
-    // Draw Display Layer
-    image(displayLayer, 0, 0);
+    // Screen Shake
+    if (screenShakeCounter > 0) {
+        let intensity = SCREENSHAKE_INTENSITY * (screenShakeCounter / SCREENSHAKE_MAX_FRAMES);
+        screenShakeX = random(-intensity/2, intensity/2);
+        screenShakeY = random(-intensity/2, intensity/2);
+        screenShakeCounter--;
+    } else {
+        screenShakeX = 0;
+        screenShakeY = 0;
+    }
 
-    // Glitch
-    /*img = displayLayer.get();
-    glitch.loadImage(img);
-    if (frameCount % 30 === 0) {
-        glitch.randomBytes(5);
-      }
-    let glitched = glitch.image;
-    image(glitched, 0, 0);*/
+
+    // Draw Display Layer
+    image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
 }
 
 function fitCanvas() {
@@ -139,4 +153,8 @@ function fitCanvas() {
       Math.floor((windowWidth - cssW) / 2),
       Math.floor((windowHeight - cssH) / 2)
     );
+}
+
+function shakeScreen(intensity) {
+    screenShakeCounter = intensity;
 }
