@@ -98,13 +98,11 @@ function isBoxFree(x, y, w, h) {
             const g = solidMask.pixels[idx + 1];
             const b = solidMask.pixels[idx + 2];
 
-            // Door detection
-            if (r === COLOR_DOOR[0] && g === COLOR_DOOR[1] && b === COLOR_DOOR[2]) {
+            if (isGoalColor(r, g, b)) {
                 doorHit = true;
             }
 
-            // Anything that's not AIR blocks
-            if (r !== COLOR_AIR[0] || g !== COLOR_AIR[1] || b !== COLOR_AIR[2]) {
+            if (!isBackgroundColor(r, g, b)) {
                 return false;
             }
         }

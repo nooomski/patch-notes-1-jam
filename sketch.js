@@ -13,9 +13,8 @@ const VX_DEADZONE     = 0.01;
 const RUN_ACCEL       = 2;
 const MAX_RUN_SPEED   = 10.0;
 const MAX_FALL_SPEED  = 20.0;
-const JUMP_VELOCITY   = -25.0;
+const JUMP_VELOCITY   = -30.0;
 //const JUMP_BUFFER_FR  = 8;     // press jump a bit early and still jump
-const PLAYER_SIZE     = 64;
 //const HITBOX_SIZE     = 12;
 //const COLOR_SOLID     = [0];
 
@@ -24,8 +23,8 @@ const SCREENSHAKE_MAX_FRAMES = 10;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
-    x: 160, y: 120,
-    w: PLAYER_SIZE, h: PLAYER_SIZE,
+    x: -1, y: -1,
+    w: 0, h: 0,
     vx: 0, vy: 0,
     onGround: false,
     //coyote: 0,
@@ -42,6 +41,7 @@ let screenShakeX = 0, screenShakeY = 0;
 let screenShakeCounter = 0;
 let glitch;
 let levelImg;
+let originalPlayerPosition = {x: -1, y: -1};
 
 function preload() {
     levelImg = loadImage('level.png');
@@ -82,9 +82,29 @@ function resetLevel() {
     }
     else console.error('Level image not loaded');
 
-    player.x = 160; player.y = 120;
+    playerInfo = findPlayerPositionAndLength();
+    originalPlayerPosition.x = playerInfo.x;
+    originalPlayerPosition.y = playerInfo.y;
+    player.x = originalPlayerPosition.x;
+    player.y = originalPlayerPosition.y;
+    player.w = playerInfo.length;
+    player.h = playerInfo.length; // assuming square
     player.vx = 0;  player.vy = 0;
     player.onGround = false;
+
+    // Draw a square the size of the player in the background color at the player's position on the solidMask
+    solidMask.noStroke();
+    let background_color_index = (map_color_index + BACKGROUND_OFFSET) % COLORS.length;
+    solidMask.fill(
+        COLORS[background_color_index][0],
+        COLORS[background_color_index][1],
+        COLORS[background_color_index][2]
+    );
+    solidMask.rectMode(CORNER);
+    solidMask.rect(player.x, player.y, player.w, player.h);
+    solidMask.rectMode(CORNER);
+
+
     //player.coyote = 0;
     //player.jumpBuf = 0;
     //player.lastX = player.x; player.lastY = player.y;
@@ -99,11 +119,13 @@ function draw() {
     movePlayer();
 
     // Draw player on Display Layer
-    displayLayer.noStroke();
-    displayLayer.fill(218, 232, 252);
-    displayLayer.rectMode(CORNER);   
-    displayLayer.rect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
-    displayLayer.rectMode(CORNER);
+    if (player.x !== -1 && player.y !== -1) {
+        displayLayer.noStroke();
+        displayLayer.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+        displayLayer.rectMode(CORNER);   
+        displayLayer.rect(player.x, player.y, player.w, player.h);
+        displayLayer.rectMode(CORNER);  
+    }
 
     // Load solidmask pixels into memory so it can be used this frame.
     solidMask.loadPixels();
@@ -111,10 +133,15 @@ function draw() {
     // Draw oldest player trail position on solidMask
     if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) && Math.round(trail[0].y) !== Math.round(player.y))) {
         solidMask.noStroke();
-        solidMask.fill(218, 232, 252);
+        solidMask.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
         solidMask.rectMode(CORNER);   
-        solidMask.rect(trail[0].x, trail[0].y, PLAYER_SIZE, PLAYER_SIZE);
+        solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
         solidMask.rectMode(CORNER);
+        displayLayer.noStroke();
+        displayLayer.fill(COLORS[map_color_index+1][0], COLORS[map_color_index+1][1], COLORS[map_color_index+1][2]);
+        displayLayer.rectMode(CORNER);   
+        displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
+        displayLayer.rectMode(CORNER);
     }
 
     // Draw Score
@@ -160,4 +187,32 @@ function fitCanvas() {
 
 function shakeScreen(intensity) {
     screenShakeCounter = intensity;
+}
+
+function findPlayerPositionAndLength() {
+    displayLayer.loadPixels();
+    let player = {x: 0, y: 0, length: 0};
+    let start = false;
+    for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+            // Loop through all pixels from top-left to bottom-right to find the first player pixel
+            const idx = 4 * (y * W + x);
+            const r = displayLayer.pixels[idx];
+            const g = displayLayer.pixels[idx + 1];
+            const b = displayLayer.pixels[idx + 2];
+            // console.log("Checking pixel", x, y, r, g, b);
+            if (isPlayerColor(r, g, b)) {
+                if (!start) {
+                    start = true;
+                    player.x = x;
+                    player.y = y;
+                }
+                player.length++;
+            } else if (start) {
+                return player;
+            }
+        }
+    }
+    console.log("Player not found");
+    return null;
 }
