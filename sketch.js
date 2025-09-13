@@ -1,4 +1,5 @@
-const W = 1440, H = 1080;
+// CANVAS SIZE
+const W = 1200, H = 800;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
@@ -47,7 +48,7 @@ function preload() {
 }
 
 function setup() {
-	cnv = createCanvas(W-SCREENSHAKE_INTENSITY, H-SCREENSHAKE_INTENSITY);
+	cnv = createCanvas(W, H);
 	pixelDensity(1);
     noSmooth();
 
