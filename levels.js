@@ -50,7 +50,10 @@ function preload() {
 }
 
 function loadNextLevel() {
-    if (current_level > 0) startTime = millis() / 1000;
+    if (current_level == 0) {
+        startTime = floor(millis()) / 1000;
+        initAudio();
+    }
     current_level++
     if (current_level >= MAPS.length) {
         current_level = 0

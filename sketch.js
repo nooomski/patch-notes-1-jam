@@ -57,7 +57,6 @@ function setup() {
     solidMask.pixelDensity(1);
 
     resetLevel();
-    initAudio();
     fitCanvas();
 }
 
@@ -80,18 +79,20 @@ function resetLevel() {
     console.log("Displayed colors", allColors);
     console.log("Actual colors", COLORS);
 
-    playerInfo = findPlayerPositionAndLength();
-    if (playerInfo) {
-        console.log("Player found in display layer", playerInfo);
-        originalPlayerPosition.x = playerInfo.x;
-        originalPlayerPosition.y = playerInfo.y;
-        player.x = originalPlayerPosition.x;
-        player.y = originalPlayerPosition.y;
-        player.w = playerInfo.length;
-        player.h = playerInfo.length; // assuming square
-    } else {
-        console.error('Player not found in display layer');
-    }
+    if (current_level != 0) {
+        playerInfo = findPlayerPositionAndLength();
+        if (playerInfo) {
+            console.log("Player found in display layer", playerInfo);
+            originalPlayerPosition.x = playerInfo.x;
+            originalPlayerPosition.y = playerInfo.y;
+            player.x = originalPlayerPosition.x;
+            player.y = originalPlayerPosition.y;
+            player.w = playerInfo.length;
+            player.h = playerInfo.length; // assuming square
+        } else {
+            console.error('Player not found in display layer');
+        }
+    }  
     player.vx = 0;  player.vy = 0;
     player.onGround = false;
 
@@ -165,7 +166,8 @@ function draw() {
         displayLayer.textAlign(LEFT, TOP);
 
         let totalSeconds = floor(millis() / 1000);
-        displayLayer.text("TIME: " + totalSeconds-startTime, 20,20);
+        let t = totalSeconds-startTime;
+        displayLayer.text("TIME: " + t, 20,20);
     }
     else {
         handleStartScreen();
