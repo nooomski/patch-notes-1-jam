@@ -2,7 +2,7 @@ const W = 1440, H = 1080;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
-const TRAIL_DELAY     = 0.5;   // seconds before trail turns solid
+const TRAIL_MAX_LENGTH= 30;    // frames before trail turns solid
 const MAX_STEP_UP     = 5;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
@@ -31,7 +31,7 @@ const player = {
     //lastX: 160, lastY: 120
 };
 
-let trailQ = [];
+let trail = [{x: 0, y: 0}];
 let doorHit = false;
 
 function preload() {
@@ -39,8 +39,9 @@ function preload() {
 }
 
 function setup() {
-	createCanvas(W, H);
+	cnv = createCanvas(W, H);
 	pixelDensity(1);
+    noSmooth();
 
     // Layer that's visualized
     displayLayer = createGraphics(W, H);
@@ -50,7 +51,13 @@ function setup() {
     solidMask.pixelDensity(1);
 
     resetLevel();
+
+    fitCanvas();
 }
+
+function windowResized() {
+    fitCanvas();
+  }
 
 function resetLevel() {
     // Clear layers
@@ -70,7 +77,7 @@ function resetLevel() {
     //player.jumpBuf = 0;
     //player.lastX = player.x; player.lastY = player.y;
 
-    trailQ.length = 0;
+    trail.length = 0;
     doorHit = false;
 }
 
@@ -130,16 +137,37 @@ function draw() {
             player.y = ty;
             player.onGround = false;
     }
-	
 
+    // Update trail
+    trail.push({x: player.x, y: player.y});
+    if (trail.length > TRAIL_MAX_LENGTH) trail.shift();
+
+    // Draw player on Display Layer
+    displayLayer.noStroke();
+    displayLayer.fill(218, 232, 252);
+    displayLayer.rectMode(CORNER);   
+    displayLayer.rect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+    displayLayer.rectMode(CORNER);
+
+    // Draw Display Layer
     image(displayLayer, 0, 0);
 
-    // Draw player
-    noStroke();
-    fill(218, 232, 252);
-    rectMode(CORNER);   
-    rect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
-    rectMode(CORNER);
+    // Draw oldest player trail position on solidMask
+    if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) && Math.round(trail[0].y) !== Math.round(player.y))) {
+        solidMask.noStroke();
+        solidMask.fill(218, 232, 252);
+        solidMask.rectMode(CORNER);   
+        solidMask.rect(trail[0].x, trail[0].y, PLAYER_SIZE, PLAYER_SIZE);
+        solidMask.rectMode(CORNER);
+    }
+
+    // Draw Score
+    displayLayer.fill(255);
+    displayLayer.textSize(40);
+    displayLayer.textAlign(LEFT, TOP);
+
+    let totalSeconds = floor(millis() / 1000);
+    displayLayer.text("TIME: " + totalSeconds, 20,20);
 }
 
 // Returns the final position { x, y } it can move to, including a step-up for slopes
@@ -196,3 +224,20 @@ function isBoxFree(x, y, w, h) {
     }
     return true;
 }  
+
+function fitCanvas() {
+    // compute the largest uniform scale that fits
+    const scale = Math.min(windowWidth / W, windowHeight / H);
+    const cssW = Math.floor(W * scale);
+    const cssH = Math.floor(H * scale);
+  
+    // set CSS size (scales the raster)
+    cnv.style('width', cssW + 'px');
+    cnv.style('height', cssH + 'px');
+  
+    // center on the page
+    cnv.position(
+      Math.floor((windowWidth - cssW) / 2),
+      Math.floor((windowHeight - cssH) / 2)
+    );
+}
