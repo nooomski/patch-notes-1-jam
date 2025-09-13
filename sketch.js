@@ -122,13 +122,13 @@ function draw() {
     }
 
     // Draw player on Display Layer
-    // if (player.x !== -1 && player.y !== -1) {
-    //     displayLayer.noStroke();
-    //     displayLayer.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
-    //     displayLayer.rectMode(CORNER);   
-    //     displayLayer.rect(player.x, player.y, player.w, player.h);
-    //     displayLayer.rectMode(CORNER);  
-    // }
+    if (player.x !== -1 && player.y !== -1) {
+        displayLayer.noStroke();
+        displayLayer.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+        displayLayer.rectMode(CORNER);   
+        displayLayer.rect(player.x, player.y, player.w, player.h);
+        displayLayer.rectMode(CORNER);  
+    }
 
     // Load solidmask pixels into memory so it can be used this frame.
     solidMask.loadPixels();
@@ -149,7 +149,8 @@ function draw() {
 
     // Draw player on solidMask to carve out the player's area
     solidMask.noStroke();
-    solidMask.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+    let i = (map_color_index+BACKGROUND_OFFSET)%COLORS.length
+    solidMask.fill(COLORS[i][0], COLORS[i][1], COLORS[i][2]);
     solidMask.rectMode(CORNER);   
     solidMask.rect(player.x, player.y, player.w, player.h);
     solidMask.rectMode(CORNER);
