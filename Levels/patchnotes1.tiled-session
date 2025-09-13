@@ -7,6 +7,14 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "level0.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.2574120891749,
+                "y": 319.92645368880716
+            }
+        },
         "level1.tmx": {
             "scale": 0.58,
             "selectedLayer": 0,

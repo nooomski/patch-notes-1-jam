@@ -12,6 +12,7 @@ const COLORS = [
 ]
 
 const MAPS = [
+    {img: 'Levels/level0.png', color_index: 5},
     {img: 'Levels/level1.png', color_index: 5},
     {img: 'Levels/level2.png', color_index: 5},
     {img: 'Levels/level3.png', color_index: 0},
@@ -31,6 +32,8 @@ const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
 const TOLERANCE = 10
 
+let keyA, keyN, keyY;
+
 function preload() {
     displayImg = loadImage(MAPS[current_level].img)
     player_color_index = MAPS[current_level].color_index
@@ -39,9 +42,15 @@ function preload() {
     background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
     const bg = COLORS[background_color_index];
     document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
+
+    // Load any-key images
+    keyA = loadImage('Levels/a.png')
+    keyN = loadImage('Levels/n.png')
+    keyY = loadImage('Levels/y.png')
 }
 
 function loadNextLevel() {
+    if (current_level > 0) startTime = millis() / 1000;
     current_level++
     if (current_level >= MAPS.length) {
         current_level = 0

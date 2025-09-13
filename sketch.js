@@ -41,6 +41,7 @@ let screenShakeX = 0, screenShakeY = 0;
 let screenShakeCounter = 0;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
+let startTime = 0;
 
 function setup() {
 	cnv = createCanvas(W, H);
@@ -157,13 +158,18 @@ function draw() {
     solidMask.rect(player.x, player.y, player.w, player.h);
     solidMask.rectMode(CORNER);
 
-    // Draw Score
-    displayLayer.fill(255);
-    displayLayer.textSize(40);
-    displayLayer.textAlign(LEFT, TOP);
+    // Draw Time & handle start screen
+    if (startTime > 0) {
+        displayLayer.fill(255);
+        displayLayer.textSize(40);
+        displayLayer.textAlign(LEFT, TOP);
 
-    let totalSeconds = floor(millis() / 1000);
-    displayLayer.text("TIME: " + totalSeconds, 20,20);
+        let totalSeconds = floor(millis() / 1000);
+        displayLayer.text("TIME: " + totalSeconds-startTime, 20,20);
+    }
+    else {
+        handleStartScreen();
+    }
 
     // Screen Shake
     if (screenShakeCounter > 0) {
@@ -246,4 +252,34 @@ function findAllColors() {
         }
     }
     return colors;
+}
+
+function handleStartScreen() {
+    let a, n, y;
+    // Draw key images based on which key is pressed
+    if (keyIsDown(65) || keyIsDown(97)) { // 'A' or 'a'
+        a = true;
+		displayLayer.image(keyA, 0, 0, width, height);
+    }
+	if (keyIsDown(78) || keyIsDown(110)) { // 'N' or 'n'
+        n = true;
+		displayLayer.image(keyN, 0, 0, width, height);
+    }
+	if (keyIsDown(89) || keyIsDown(121)) { // 'Y' or 'y'
+        y = true;
+		displayLayer.image(keyY, 0, 0, width, height);
+	}
+    if (a && n && y) {
+        loadNextLevel();
+    }
+
+    if (keyIsPressed && !a && !n && !y) {
+        shakeScreen(SCREENSHAKE_MAX_FRAMES/2);
+    }
+	// Redraw level on top transparently so the previous key images fade out
+	displayLayer.push();
+	displayLayer.tint(255, 32);
+	displayLayer.image(displayImg, 0, 0, width, height);
+	displayLayer.noTint();
+	displayLayer.pop();
 }
