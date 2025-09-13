@@ -4,11 +4,11 @@ const W = 1200, H = 800;
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
 const TRAIL_MAX_LENGTH= 30;    // frames before trail turns solid
-const MAX_STEP_UP     = 5;     // max px to "walk up" slopes
+const MAX_STEP_UP     = 32;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
 const AIR_DRAG        = 0.02;
-const VX_DEADZONE     = 0.01;
+const VX_DEADZONE     = 0.03;
 
 const RUN_ACCEL       = 2;
 const MAX_RUN_SPEED   = 10.0;
@@ -122,19 +122,19 @@ function draw() {
     }
 
     // Draw player on Display Layer
-    if (player.x !== -1 && player.y !== -1) {
-        displayLayer.noStroke();
-        displayLayer.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
-        displayLayer.rectMode(CORNER);   
-        displayLayer.rect(player.x, player.y, player.w, player.h);
-        displayLayer.rectMode(CORNER);  
-    }
+    // if (player.x !== -1 && player.y !== -1) {
+    //     displayLayer.noStroke();
+    //     displayLayer.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+    //     displayLayer.rectMode(CORNER);   
+    //     displayLayer.rect(player.x, player.y, player.w, player.h);
+    //     displayLayer.rectMode(CORNER);  
+    // }
 
     // Load solidmask pixels into memory so it can be used this frame.
     solidMask.loadPixels();
 
     // Draw oldest player trail position on solidMask
-    if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) && Math.round(trail[0].y) !== Math.round(player.y))) {
+    if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) || Math.round(trail[0].y) !== Math.round(player.y))) {
         solidMask.noStroke();
         solidMask.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
         solidMask.rectMode(CORNER);   
@@ -146,6 +146,13 @@ function draw() {
         displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
         displayLayer.rectMode(CORNER);
     }
+
+    // Draw player on solidMask to carve out the player's area
+    solidMask.noStroke();
+    solidMask.fill(COLORS[map_color_index][0], COLORS[map_color_index][1], COLORS[map_color_index][2]);
+    solidMask.rectMode(CORNER);   
+    solidMask.rect(player.x, player.y, player.w, player.h);
+    solidMask.rectMode(CORNER);
 
     // Draw Score
     displayLayer.fill(255);
