@@ -90,6 +90,8 @@ function resetLevel() {
 
     trail.length = 0;
     doorHit = false;
+
+    shakeScreen(SCREENSHAKE_MAX_FRAMES);
 }
 
 function draw() {
