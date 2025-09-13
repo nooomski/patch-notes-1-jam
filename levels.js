@@ -30,7 +30,7 @@ var background_color_index = 0
 const PASSTHROUGH_OFFSET = 1
 const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
-const TOLERANCE = 10
+const TOLERANCE = 8
 
 let keyA, keyN, keyY;
 
@@ -60,13 +60,18 @@ function loadNextLevel() {
     }
     current_level++
     if (current_level >= MAPS.length) {
+        console.log("No more levels")
         current_level = 0
     }
+    console.log("Loading level", current_level)
     try {
         displayImg = loadImage(MAPS[current_level].img, () => {
+            console.log(passthroughHit)
             player_color_index = MAPS[current_level].color_index
             updateColorScheme(player_color_index)
             resetLevel()
+            console.log(passthroughHit)
+            console.log("Level image loaded", current_level)
         })
     } catch (error) {
         console.error("Error loading level image", error)

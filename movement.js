@@ -102,12 +102,12 @@ function isBoxFree(x, y, w, h) {
             }
 
             if (isPassthroughColor(r, g, b)) {
+                console.log("Passthrough hit", COLORS[passthrough_color_index], x, y, {r, g, b})
                 passthroughHit = true;
                 break;
             }
 
             if (!isBackgroundColor(r, g, b)) {
-                console.log("Blocked by non-background color", r, g, b);
                 return false;
             }
         }

@@ -44,6 +44,7 @@ let screenShakeCounter = 0;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
 let startTime = 0;
+let loadingNextLevel = false;
 
 function setup() {
 	cnv = createCanvas(W, H);
@@ -113,17 +114,28 @@ function resetLevel() {
     //player.lastX = player.x; player.lastY = player.y;
 
     trail.length = 0;
+    image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
     goalHit = false;
+    passthroughHit = false;
+    setTimeout(() => { loadingNextLevel = false; }, 1000);
 
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
 }
 
 function draw() {
     if (keyIsDown(82)) resetLevel(); // R to reset
-    movePlayer();
+    
+
+    if (!loadingNextLevel) {
+        movePlayer();
+    }
+
 
     if (goalHit) {
+        loadingNextLevel = true;
+        console.log("Goal hit! Loading next level...", passthroughHit);
         loadNextLevel();
+        goalHit = false
     }
 
     // Load solidmask pixels into memory so it can be used this frame.
@@ -131,7 +143,9 @@ function draw() {
 
     if (passthroughHit) {
         // change passthrough color and background color
+        console.log("Changing colors", COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length]);
         changeColors(COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length])
+        console.log("Changing background color", COLORS[background_color_index], COLORS[background_color_index + 1 % COLORS.length]);
         changeColors(COLORS[background_color_index], COLORS[background_color_index + 1 % COLORS.length])
         updateColorScheme(player_color_index + 1 % COLORS.length)
         passthroughHit = false;
@@ -239,6 +253,7 @@ function findPlayerPositionAndLength() {
                 }
                 player.length++;
             } else if (start) {
+                console.log("Player found in display layer", COLORS[player_color_index], x, y);
                 return player;
             }
         }
