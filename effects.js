@@ -4,6 +4,9 @@ const SCREENSHAKE_MAX_FRAMES = 20;
 let screenShakeX = 0, screenShakeY = 0;
 let screenShakeCounter = 0;
 
+let effectIntensity = 0;
+let effectIntensityMax = 50;
+
 function shakeScreen(intensity) {
     screenShakeCounter = intensity;
 }

@@ -45,8 +45,8 @@ function loadNextLevel() {
     if (current_level == 0) {
         startTime = floor(millis()) / 1000;
         anyKeyTries = 0;
-        initAudio();
     }
+    resetAudio();
     current_level++
     if (current_level >= MAPS.length) {
         console.log("No more levels")

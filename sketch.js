@@ -3,7 +3,7 @@ const W = 960, H = 640;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
-const TRAIL_MAX_LENGTH= 20;    // frames before trail turns solid
+const TRAIL_MAX_LENGTH= 10;    // frames before trail turns solid
 const MAX_STEP_UP     = 16;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
@@ -80,19 +80,26 @@ function windowResized() {
 }
 
 function draw() {
+    // Load solidmask pixels into memory so it can be used this frame.
+    console.time('solidMask.loadPixels');
+    solidMask.loadPixels();
+    console.timeEnd('solidMask.loadPixels');
 
-    if (!loadingNextLevel) movePlayer();
+    // Move player and manage audio
+    if (!loadingNextLevel) {
+        console.time('movePlayer');
+        movePlayer();
+        console.timeEnd('movePlayer');
+    }
+    if (audioInitialized) manageAudio();
 
+    // Check for goal and passthrough
     if (goalHit) {
         loadingNextLevel = true;
         console.log("Goal hit! Loading next level...", passthroughHit);
         loadNextLevel();
         goalHit = false
     }
-
-    // Load solidmask pixels into memory so it can be used this frame.
-    solidMask.loadPixels();
-
     if (passthroughHit) {
         shakeScreen(SCREENSHAKE_MAX_FRAMES);
         // change passthrough color and background color
@@ -102,7 +109,6 @@ function draw() {
         changeColors(COLORS[background_color_index], COLORS[background_color_index + 1 % COLORS.length])
         updateColorScheme(player_color_index + 1 % COLORS.length)
         passthroughHit = false;
-        // change player color
     }
 
     // Draw player on Display Layer
@@ -150,10 +156,11 @@ function draw() {
     }
 
     handleScreenShake();
+    effectIntensity = screenShakeCounter + current_level/2; // Applies to chromatic aberration effect and audio
 
     // Draw Display Layer
     image(displayLayer, screenShakeX, screenShakeY);
-    drawRGBSplit(displayLayer, screenShakeCounter + current_level/2);
+    drawRGBSplit(displayLayer, effectIntensity);
     
 }
 
@@ -274,8 +281,11 @@ function keyPressed() {
             resetLevel(); // runs once per press
         }
     }
-    else if ((k !== 'a') && (k !== 'n') && (k !== 'y')) {
-        shakeScreen(Math.min(SCREENSHAKE_MAX_FRAMES * 2, SCREENSHAKE_MAX_FRAMES / 2 + anyKeyTries / 4));
-        anyKeyTries++;
+    else {
+        if (!audioInitialized) initAudio();
+        if ((k !== 'a') && (k !== 'n') && (k !== 'y')) {
+            shakeScreen(Math.min(SCREENSHAKE_MAX_FRAMES * 2, SCREENSHAKE_MAX_FRAMES / 2 + anyKeyTries / 4));
+            anyKeyTries++;
+        }
     }
 }
