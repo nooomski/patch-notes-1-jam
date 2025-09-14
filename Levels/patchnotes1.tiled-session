@@ -3,9 +3,8 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level9.tmx",
+    "activeFile": "level8.tmx",
     "expandedProjectPaths": [
-        "."
     ],
     "fileStates": {
         "level1.tmx": {
@@ -28,8 +27,8 @@
             "scale": 0.683,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 483.89458272327965,
-                "y": 239.38506588579799
+                "x": 479.5021961932649,
+                "y": 319.91215226939966
             }
         },
         "level3.tmx": {
@@ -37,46 +36,46 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 479.3964957819598,
-                "y": 302.5632706035043
+                "y": 320.4088254380273
             }
         },
         "level4.tmx": {
             "scale": 0.6548,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 497.09835064141726,
-                "y": 333.6896762370189
+                "x": 480.2993280390958,
+                "y": 319.94502138057425
             }
         },
         "level5.tmx": {
             "scale": 0.6435,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 476.3014763014764,
-                "y": 334.88733488733493
+                "x": 487.1794871794872,
+                "y": 313.1313131313131
             }
         },
         "level6.tmx": {
-            "scale": 0.6698,
+            "scale": 0.8162,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 478.501045088086,
-                "y": 387.4290833084503
+                "x": 469.86032835089435,
+                "y": 337.5398186718941
             }
         },
         "level7.tmx": {
             "scale": 0.5928,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 415.8232118758434,
-                "y": 277.49662618083676
+                "x": 479.92577597840756,
+                "y": 319.6693657219973
             }
         },
         "level8.tmx": {
             "scale": 0.6778645833333332,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.18440261237043,
+                "x": 480.1844026123705,
                 "y": 319.38532462543225
             }
         },
@@ -85,7 +84,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 480.18440261237043,
-                "y": 316.4348828275068
+                "y": 319.3853246254322
             }
         },
         "levelPlaceHolder.tmx": {
@@ -93,7 +92,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 480.5,
-                "y": 319.5
+                "y": 320.5
             }
         },
         "tilemap.tsx": {
@@ -114,8 +113,7 @@
         "level10.tmx",
         "levelPlaceHolder.tmx",
         "level8.tmx",
-        "level7.tmx",
-        "level9.tmx"
+        "level7.tmx"
     ],
     "project": "patchnotes1.tiled-project",
     "recentFiles": [
@@ -128,9 +126,9 @@
         "level6.tmx",
         "level10.tmx",
         "levelPlaceHolder.tmx",
-        "level8.tmx",
         "level7.tmx",
-        "level9.tmx"
+        "level8.tmx",
+        "level0-2.tmx"
     ],
     "tileset.lastUsedFormat": "tsx"
 }
