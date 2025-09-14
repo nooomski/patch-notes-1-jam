@@ -126,6 +126,7 @@ function flipHalfOfScreen(whichHalf) {
     flipHalfOfGraphic(solidMask, whichHalf)
 
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
+    drawForceField();
     
     // Flip the trail
     if (Array.isArray(trail) && trail.length > 0) {

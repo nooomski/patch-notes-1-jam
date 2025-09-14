@@ -160,7 +160,7 @@ function draw() {
             solidMask.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
             solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
             if (DEGUB_MODE) {
-                displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]); 
+                displayLayer.fill(COLORS[(player_color_index+1)%COLORS.length][0], COLORS[(player_color_index+1)%COLORS.length][1], COLORS[(player_color_index+1)%COLORS.length][2]); 
                 displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
             }
         }
@@ -330,7 +330,7 @@ function keyPressed() {
     // runs once per press
     if (current_level != 0) {
         if (k === 'r') resetLevel();
-        if (!DEGUB_MODE) {
+        if (DEGUB_MODE) {
             if (k === 'n' && !isFinalLevel()) loadLevel(current_level + 1);
             if (k === 'p') loadLevel(current_level - 1);
             if (k === 'f') flipHalfOfScreen("left");
