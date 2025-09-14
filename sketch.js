@@ -129,6 +129,11 @@ function draw() {
         updateColorScheme((player_color_index + 1) % COLORS.length)
         // find the new place of the goal
         goal = findGoalPositionAndSize();
+
+        if (isSecondRound()) {
+            if (player.x < W/2) flipHalfOfScreen("left");
+            else flipHalfOfScreen("right");
+        }
     }
     passthroughHit = false;
 
