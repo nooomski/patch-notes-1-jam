@@ -14,7 +14,7 @@ function movePlayer() {
         // Level 10: Any key accelerates left
         let anyKeyPressed = false;
         for (let i = 0; i < 256; i++) {
-            if (keyIsDown(i) && !keyIsDown("r") && !keyIsDown("R")) {
+            if (keyIsDown(i) && i !== 82 && i !== 114) { // Exclude 'R' (82) and 'r' (114)
                 anyKeyPressed = true;
                 break;
             }
@@ -24,7 +24,7 @@ function movePlayer() {
         //targetAx = anyKeyPressed ? -RUN_ACCEL : 0;
 
         // Mouse input for right movement
-        if (mouseIsPressed) {
+        if (mouseIsPressed || levelTimeCounter/1000 > 5) {
             player.vx += RUN_ACCEL;
         }
     }

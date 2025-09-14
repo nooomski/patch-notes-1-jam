@@ -17,10 +17,10 @@ const MAPS = [
     {img: 'Levels/level2.png', color_index: 5},
     {img: 'Levels/level3.png', color_index: 0},
     {img: 'Levels/level4.png', color_index: 0},
-    {img: 'Levels/level5.png', color_index: 3},
-    {img: 'Levels/level6.png', color_index: 1},
-    {img: 'Levels/level7.png', color_index: 0},
-    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/level5.png', color_index: 0},
+    {img: 'Levels/level6.png', color_index: 3},
+    {img: 'Levels/level7.png', color_index: 1},
+    {img: 'Levels/level8.png', color_index: 0},
     {img: 'Levels/levelPlaceHolder.png', color_index: 5},
     {img: 'Levels/level10.png', color_index: 5},
 ]
@@ -72,6 +72,7 @@ function loadNextLevel() {
     } catch (error) {
         console.error("Error loading level image", error)
     }
+    resetLevelCounter();
 }
 
 function resetLevel() {
@@ -137,6 +138,8 @@ function resetLevel() {
     setTimeout(() => { loadingNextLevel = false; }, 1000);
 
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
+
+    resetLevelCounter();
 }
 
 function isPlayerColor(r, g, b) {
@@ -168,4 +171,9 @@ function isCloseToColor(r, g, b, target) {
         return true;
     }
     return false;
+}
+
+function resetLevelCounter() {
+    levelTimeStart = millis();
+    levelTimeCounter = 0;
 }

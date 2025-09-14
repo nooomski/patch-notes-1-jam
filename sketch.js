@@ -43,6 +43,8 @@ let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
 
 let loadingNextLevel = false;
+let levelTimeCounter = 0;
+let levelTimeStart = 0;
 
 let startTime = 0;
 let keyA, keyN, keyY, keyHelper;
@@ -190,8 +192,11 @@ function draw() {
     drawRGBSplit(displayLayer, effectIntensity);
     if (current_level != 0) {
         drawGoalSplit(effectIntensity);
-        console.log("Goal X: ", goal.x, "Goal Y: ", goal.y, "Goal W: ", goal.w, "Goal H: ", goal.h);
+        //console.log("Goal X: ", goal.x, "Goal Y: ", goal.y, "Goal W: ", goal.w, "Goal H: ", goal.h);
     }
+
+    levelTimeCounter = millis() - levelTimeStart;
+    //console.log("Level Time Counter: ", levelTimeCounter);
 }
 
 function fitCanvas() {
