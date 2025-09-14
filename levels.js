@@ -99,6 +99,9 @@ function resetLevel() {
     if (displayImg) {
         displayLayer.image(displayImg, 0, 0, W, H);
         solidMask.image(displayImg, 0, 0, W, H);
+
+        // Flip the screen for lvl 13
+        if (current_level == 13) flipHalfOfScreen("right");
     }
     else console.error('Level image not loaded');
 

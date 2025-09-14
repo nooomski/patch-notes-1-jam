@@ -3,16 +3,17 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level8.tmx",
+    "activeFile": "level9.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "fileStates": {
         "level1.tmx": {
             "scale": 0.6282,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 462.43234638650114,
-                "y": 339.85991722381414
+                "x": 479.94269340974216,
+                "y": 311.20662209487426
             }
         },
         "level10.tmx": {
@@ -27,8 +28,8 @@
             "scale": 0.683,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 483.89458272327965,
-                "y": 239.38506588579799
+                "x": 479.5021961932649,
+                "y": 319.91215226939966
             }
         },
         "level3.tmx": {
@@ -51,24 +52,24 @@
             "scale": 0.6435,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 476.3014763014764,
-                "y": 334.88733488733493
+                "x": 479.4094794094795,
+                "y": 319.3473193473194
             }
         },
         "level6.tmx": {
             "scale": 0.6698,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 478.501045088086,
-                "y": 387.4290833084503
+                "x": 479.99402806808,
+                "y": 320.244849208719
             }
         },
         "level7.tmx": {
             "scale": 0.5928,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 415.8232118758434,
-                "y": 277.49662618083676
+                "x": 479.92577597840756,
+                "y": 319.66936572199734
             }
         },
         "level8.tmx": {
@@ -113,7 +114,8 @@
         "level10.tmx",
         "levelPlaceHolder.tmx",
         "level8.tmx",
-        "level7.tmx"
+        "level7.tmx",
+        "level9.tmx"
     ],
     "project": "patchnotes1.tiled-project",
     "recentFiles": [
@@ -126,9 +128,9 @@
         "level6.tmx",
         "level10.tmx",
         "levelPlaceHolder.tmx",
-        "level7.tmx",
         "level8.tmx",
-        "level0-2.tmx"
+        "level7.tmx",
+        "level9.tmx"
     ],
     "tileset.lastUsedFormat": "tsx"
 }
