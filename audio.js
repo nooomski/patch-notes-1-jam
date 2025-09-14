@@ -3,6 +3,7 @@ const AUDIO_MAX_OSCS = 6;
 // sound params:
 let audioInitialized = false;
 let osc = [];
+let ping;
 let lfo = [];
 let lfoStrength = [];
 let lfoRange = [];
@@ -29,12 +30,17 @@ function initAudio() {
         osc[i] = new p5.Oscillator(1,'sine');
         osc[i].amp(0);
     }
-    resetAudio();
     
     distortion.disconnect();
     distortion.connect(reverb);
     reverb.disconnect();
     reverb.connect(filter);
+
+    ping = new p5.Oscillator(1,'sine');
+    ping.amp(0);
+    ping.freq(440);
+
+    resetAudio();
 }
 
 function resetAudio() {
@@ -71,4 +77,11 @@ function manageAudio() {
         osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
     }
     distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
+}
+
+function playPing(v) {
+    ping.freq(200 + random(200));
+    ping.amp(v,0.05);
+    ping.start();
+    ping.amp(0,0.2);   
 }

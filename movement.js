@@ -54,6 +54,21 @@ function movePlayer() {
     // Update trail
     trail.push({x: player.x, y: player.y});
     if (trail.length > TRAIL_MAX_LENGTH) trail.shift();
+
+    // Check if player is stuck
+    
+
+
+
+    if (current_level != 0) {
+        player.lastX = player.x; player.lastY = player.y;
+        if (player.x === player.lastX && player.y === player.lastY) playerNoMoveCounter++;
+        else playerNoMoveCounter = 0;
+
+        // if (playerNoMoveCounter > 100) {
+        //     console.log("Player is not moving");
+        // }
+    }
 }
 
 // Returns the final position { x, y } it can move to, including a step-up for slopes

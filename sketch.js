@@ -28,7 +28,7 @@ const player = {
     onGround: false,
     //coyote: 0,
     //jumpBuf: 0,
-    //lastX: 160, lastY: 120
+    lastX: -1, lastY: -1
 };
 
 // Globals
@@ -40,11 +40,13 @@ let cnv;
 let displayLayer, solidMask;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
+let playerNoMoveCounter = 0;
 
 let loadingNextLevel = false;
 
 let startTime = 0;
 let keyA, keyN, keyY, keyHelper;
+let aPressed, nPressed, yPressed;
 let anyKeyTries = 0;
 
 function preload() {
@@ -149,7 +151,7 @@ function draw() {
 
     // Draw Time & handle start screen
     if (startTime > 0) {
-        let totalSeconds = round(millis() / 1000);
+        let totalSeconds = millis() / 1000;
         let t = round(totalSeconds-startTime);
 
         // Draw on display layer to show the user the time
@@ -258,30 +260,32 @@ function findGoalPositionAndSize() {
 }
 
 function handleStartScreen() {
-    let a, n, y;
     // Draw key images based on which key is pressed
-    if (keyIsDown(65) || keyIsDown(97)) { // 'A' or 'a'
-        a = true;
+    if ((keyIsDown(65) || keyIsDown(97)) && !aPressed) { // 'A' or 'a'
+        aPressed = true;
 		displayLayer.image(keyA, 0, 0, W, H);
+        playPing(0.25);
     }
-	if (keyIsDown(78) || keyIsDown(110)) { // 'N' or 'n'
-        n = true;
+	if ((keyIsDown(78) || keyIsDown(110)) && !nPressed) { // 'N' or 'n'
+        nPressed = true;
 		displayLayer.image(keyN, 0, 0, W, H);
+        playPing(0.25);
     }
-	if (keyIsDown(89) || keyIsDown(121)) { // 'Y' or 'y'
-        y = true;
+	if ((keyIsDown(89) || keyIsDown(121)) && !yPressed) { // 'Y' or 'y'
+        yPressed = true;
 		displayLayer.image(keyY, 0, 0, W, H);
+        playPing(0.25);
 	}
-    if (a && n && y) {
+    if (aPressed && nPressed && yPressed) {
         loadNextLevel();
     }
 
 	// Redraw level on top transparently so the previous key images fade out
-	displayLayer.push();
-	displayLayer.tint(255, 32);
-	displayLayer.image(displayImg, 0, 0, W, H);
-	displayLayer.noTint();
-	displayLayer.pop();
+	// displayLayer.push();
+	// displayLayer.tint(255, 32);
+	// displayLayer.image(displayImg, 0, 0, W, H);
+	// displayLayer.noTint();
+	// displayLayer.pop();
 }
 
 function changeDisplay(oldPassthroughColor, oldBackgroundColor, newBackgroundColor) {
