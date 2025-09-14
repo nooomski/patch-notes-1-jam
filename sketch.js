@@ -297,13 +297,6 @@ function handleStartScreen() {
     if (aPressed && nPressed && yPressed) {
         loadLevel(current_level + 1);
     }
-
-	// Redraw level on top transparently so the previous key images fade out
-	// displayLayer.push();
-	// displayLayer.tint(255, 32);
-	// displayLayer.image(displayImg, 0, 0, W, H);
-	// displayLayer.noTint();
-	// displayLayer.pop();
 }
 
 function changeDisplay(oldPassthroughColor, oldBackgroundColor, newBackgroundColor) {

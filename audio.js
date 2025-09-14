@@ -89,7 +89,7 @@ function resetAudio() {
         }
         // Increase reverb
         reverb.set(8, 4, true);
-        reverb.drywet(1);
+        reverb.drywet(0.7);
 
         // Silence distortion
         try { distortion.amp(0); } catch(e) {}
