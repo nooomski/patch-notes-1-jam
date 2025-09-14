@@ -85,10 +85,11 @@ function resetAudio() {
         for (let i=0;i<4;i++) {
             osc[i].freq(freqs[i]);
             osc[i].connect(reverb);
-            osc[i].amp(0.20, 1);
+            osc[i].amp(0.15, 1);
         }
         // Increase reverb
         reverb.set(8, 4, true);
+        reverb.drywet(1);
 
         // Silence distortion
         try { distortion.amp(0); } catch(e) {}

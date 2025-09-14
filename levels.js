@@ -52,7 +52,7 @@ function updateColorScheme(player_index) {
     goal_color_index = (player_index + GOAL_OFFSET) % COLORS.length
     background_color_index = (player_index + BACKGROUND_OFFSET) % COLORS.length
     const bg = COLORS[background_color_index];
-    document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
+    document.body.style.setProperty('background-color', `rgb(${bg[0]-20}, ${bg[1]-20}, ${bg[2]-20})`);
 }
 
 function loadLevel(newLevel) {
