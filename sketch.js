@@ -16,7 +16,7 @@ const MAX_FALL_SPEED  = 20.0;
 const JUMP_VELOCITY   = -30.0;
 const COYOTE_TIME     = 8;
 
-const DEGUB_MODE = false;
+const DEGUB_MODE = true;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
@@ -126,6 +126,9 @@ function draw() {
         updateColorScheme((player_color_index + 1) % COLORS.length)
         // find the new place of the goal
         goal = findGoalPositionAndSize();
+        if (goal) {
+            if (DEGUB_MODE) console.log("Goal found in display layer", goal);
+        }
 
         if (isSecondRound()) {
             if (player.x < W/2) flipHalfOfScreen("left");
@@ -232,7 +235,6 @@ function findPlayerPositionAndLength() {
                 }
                 player.length++;
             } else if (start) {
-                if (DEGUB_MODE) console.log("Player found in display layer", COLORS[player_color_index], x, y);
                 return player;
             }
         }
