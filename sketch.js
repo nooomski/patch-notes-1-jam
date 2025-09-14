@@ -324,10 +324,10 @@ function changeDisplay(oldPassthroughColor, oldBackgroundColor, newBackgroundCol
 
 function keyPressed() {
     let k = key.toLowerCase();
+    // runs once per press
     if (current_level != 0) {
-        if (k === 'r') {
-            resetLevel(); // runs once per press
-        }
+        if (k === 'r') resetLevel();
+        if (k === 'p') loadNextLevel();
     }
     else {
         if (!audioInitialized) initAudio();

@@ -19,6 +19,10 @@ const MAPS = [
     {img: 'Levels/level4.png', color_index: 0},
     {img: 'Levels/level5.png', color_index: 3},
     {img: 'Levels/level6.png', color_index: 1},
+    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/level10.png', color_index: 5},
 ]
 
 var current_level = 0

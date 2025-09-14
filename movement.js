@@ -1,11 +1,34 @@
 function movePlayer() {
-    // Input
-    const left  = keyIsDown(LEFT_ARROW)  || keyIsDown(65);  // LEFT / A
-    const right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);  // RIGHT / D
-    const jump  = keyIsDown(32) || keyIsDown(87) || keyIsDown(UP_ARROW); // SPACE / W / UP
+    let targetAx = 0;
+    let left, right, jump;
+    if (current_level != 10) {
+        // Input
+        left  = keyIsDown(LEFT_ARROW)  || keyIsDown(65);  // LEFT / A
+        right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);  // RIGHT / D
+        jump  = keyIsDown(32) || keyIsDown(87) || keyIsDown(UP_ARROW); // SPACE / W / UP
 
-    // Horizontal acceleration
-    const targetAx = (right - left) * RUN_ACCEL;
+        // Horizontal acceleration
+        targetAx = (right - left) * RUN_ACCEL;
+    }
+    else {
+        // Level 10: Any key accelerates left
+        let anyKeyPressed = false;
+        for (let i = 0; i < 256; i++) {
+            if (keyIsDown(i) && !keyIsDown("r") && !keyIsDown("R")) {
+                anyKeyPressed = true;
+                break;
+            }
+        }
+        
+        if (anyKeyPressed) player.vx -= RUN_ACCEL;
+        //targetAx = anyKeyPressed ? -RUN_ACCEL : 0;
+
+        // Mouse input for right movement
+        if (mouseIsPressed) {
+            player.vx += RUN_ACCEL;
+        }
+    }
+
     player.vx += targetAx;
     player.vx = constrain(player.vx, -MAX_RUN_SPEED, MAX_RUN_SPEED);
 
@@ -31,7 +54,7 @@ function movePlayer() {
     if (!isBoxFree(player.x, player.y + 1, player.w, player.h)) player.onGround = true;
     else player.onGround = false;
 
-    if (jump && player.onGround) player.vy = JUMP_VELOCITY;
+    if (jump && player.onGround && current_level != 10) player.vy = JUMP_VELOCITY;
 
     player.vy = constrain(player.vy, -MAX_FALL_SPEED, MAX_FALL_SPEED);
 
@@ -63,6 +86,12 @@ function movePlayer() {
                 player.isStuck = true;
                 shakeScreen(SCREENSHAKE_MAX_FRAMES);
             }
+        }
+    }
+    if (current_level == 10) {
+        if (player.x <= 0 && !player.isStuck) {
+            player.isStuck = true;
+            shakeScreen(SCREENSHAKE_MAX_FRAMES);
         }
     }
 }

@@ -3,73 +3,114 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "level10.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "fileStates": {
+        "level0-2.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.257412089175,
+                "y": 319.9264536888071
+            }
+        },
         "level0.tmx": {
             "scale": 0.67984375,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 439.07147782119057,
-                "y": 352.28683061365206
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
         },
         "level1.tmx": {
             "scale": 0.58,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 511.2068965517242,
-                "y": 454.3103448275862
+                "x": 480.17241379310354,
+                "y": 309.4827586206897
+            }
+        },
+        "level10.tmx": {
+            "scale": 0.67984375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
         },
         "level2.tmx": {
             "scale": 0.67984375,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.2574120891749,
-                "y": 365.5251666283613
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
         },
         "level3.tmx": {
             "scale": 0.67984375,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 546.4490921627212,
-                "y": 328.7520110319467
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
         },
         "level4.tmx": {
             "scale": 0.67984375,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.25741208917486,
-                "y": 319.92645368880716
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
         },
         "level5.tmx": {
             "scale": 0.67984375,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 455.251666283613,
-                "y": 237.55458515283848
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
         },
         "level6.tmx": {
             "scale": 0.67984375,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 480.25741208917486,
-                "y": 319.92645368880716
+                "x": 480.257412089175,
+                "y": 319.9264536888071
             }
+        },
+        "tilemap.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
     "last.imagePath": "/Users/noam/Code/Games/patch-notes-1-jam/Levels",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
+        "level1.tmx",
+        "tilemap.tsx",
+        "level2.tmx",
+        "level3.tmx",
+        "level4.tmx",
+        "level5.tmx",
+        "level6.tmx",
+        "level0.tmx",
+        "level10.tmx",
+        "level0-2.tmx"
     ],
     "project": "patchnotes1.tiled-project",
     "recentFiles": [
+        "level1.tmx",
+        "tilemap.tsx",
+        "level2.tmx",
+        "level3.tmx",
+        "level4.tmx",
+        "level5.tmx",
+        "level6.tmx",
+        "level0.tmx",
+        "level0-2.tmx",
+        "level10.tmx"
     ],
     "tileset.lastUsedFormat": "tsx"
 }
