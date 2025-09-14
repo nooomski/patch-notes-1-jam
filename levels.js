@@ -23,6 +23,16 @@ const MAPS = [
     {img: 'Levels/level8.png', color_index: 0},
     {img: 'Levels/levelPlaceHolder.png', color_index: 5},
     {img: 'Levels/level10.png', color_index: 5},
+    {img: 'Levels/level1.png', color_index: 5},
+    {img: 'Levels/level2.png', color_index: 5},
+    {img: 'Levels/level3.png', color_index: 0},
+    {img: 'Levels/level4.png', color_index: 0},
+    {img: 'Levels/level5.png', color_index: 3},
+    {img: 'Levels/level6.png', color_index: 1},
+    {img: 'Levels/level7.png', color_index: 0},
+    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/end.png', color_index: 5},
 ]
 
 var current_level = 0
@@ -66,6 +76,10 @@ function loadNextLevel() {
             player_color_index = MAPS[current_level].color_index
             updateColorScheme(player_color_index)
             resetLevel()
+            if (isFinalLevel()) {
+                let currentTime = floor(millis() / 1000);
+                finalTime = currentTime - startTime;
+            }
             console.log(passthroughHit)
             console.log("Level image loaded", current_level)
         })
@@ -176,4 +190,8 @@ function isCloseToColor(r, g, b, target) {
 function resetLevelCounter() {
     levelTimeStart = millis();
     levelTimeCounter = 0;
+}
+
+function isFinalLevel() {
+    return current_level == MAPS.length - 1;
 }

@@ -47,6 +47,7 @@ let levelTimeCounter = 0;
 let levelTimeStart = 0;
 
 let startTime = 0;
+let finalTime = 0;
 let keyA, keyN, keyY, keyHelper;
 let aPressed, nPressed, yPressed;
 let anyKeyTries = 0;
@@ -86,6 +87,9 @@ function windowResized() {
 }
 
 function draw() {
+    if (isFinalLevel()) {
+        displayLayer.image(displayImg, 0, 0, W, H);
+    }
     // Load solidmask pixels into memory so it can be used this frame.
     //console.time('solidMask.loadPixels');
     solidMask.loadPixels();
@@ -159,6 +163,9 @@ function draw() {
     if (startTime > 0) {
         let totalSeconds = millis() / 1000;
         let t = round(totalSeconds-startTime);
+        if (finalTime > 0) {
+            t = finalTime;
+        }
 
         // Draw on display layer to show the user the time
         displayLayer.fill(255);
@@ -189,10 +196,11 @@ function draw() {
 
     // Draw Display Layer
     image(displayLayer, screenShakeX, screenShakeY);
-    drawRGBSplit(displayLayer, effectIntensity);
-    if (current_level != 0) {
-        drawGoalSplit(effectIntensity);
-        //console.log("Goal X: ", goal.x, "Goal Y: ", goal.y, "Goal W: ", goal.w, "Goal H: ", goal.h);
+    if (!isFinalLevel()) {
+        drawRGBSplit(displayLayer, effectIntensity);
+        if (current_level != 0) {
+            drawGoalSplit(effectIntensity);
+        }
     }
 
     levelTimeCounter = millis() - levelTimeStart;
@@ -342,3 +350,4 @@ function keyPressed() {
         }
     }
 }
+
