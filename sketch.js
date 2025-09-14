@@ -147,7 +147,7 @@ function draw() {
 
         // Check for wrap
         if (player.x + player.w > W) {
-            displayLayer.rect(0, player.y, W - player.x, player.h);
+            displayLayer.rect(0, player.y, player.w - (W - player.x), player.h);
         }
     }
 
@@ -168,7 +168,7 @@ function draw() {
     solidMask.rect(player.x, player.y, player.w, player.h);
 
     if (player.x + player.w > W) {
-        solidMask.rect(0, player.y, W - player.x, player.h);
+        solidMask.rect(0, player.y, player.w - (W - player.x), player.h);
     }
 
     // Custom Level Logic
