@@ -19,7 +19,7 @@ const MAPS = [
     {img: 'Levels/level4.png', color_index: 0},
     {img: 'Levels/level5.png', color_index: 3},
     {img: 'Levels/level6.png', color_index: 1},
-    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/level7.png', color_index: 0},
     {img: 'Levels/levelPlaceHolder.png', color_index: 5},
     {img: 'Levels/levelPlaceHolder.png', color_index: 5},
     {img: 'Levels/level10.png', color_index: 5},
@@ -60,7 +60,8 @@ function loadNextLevel() {
     }
     console.log("Loading level", current_level)
     try {
-        displayImg = loadImage(MAPS[current_level].img, () => {
+        // to remove the suffix once the levels are done (had caching issues)
+        displayImg = loadImage(MAPS[current_level].img + "?v=" + Math.random(), () => {
             console.log(passthroughHit)
             player_color_index = MAPS[current_level].color_index
             updateColorScheme(player_color_index)
