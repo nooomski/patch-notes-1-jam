@@ -188,7 +188,10 @@ function draw() {
     // Draw Display Layer
     image(displayLayer, screenShakeX, screenShakeY);
     drawRGBSplit(displayLayer, effectIntensity);
-    
+    if (current_level != 0) {
+        drawGoalSplit(effectIntensity);
+        console.log("Goal X: ", goal.x, "Goal Y: ", goal.y, "Goal W: ", goal.w, "Goal H: ", goal.h);
+    }
 }
 
 function fitCanvas() {

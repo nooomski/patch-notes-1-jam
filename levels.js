@@ -47,7 +47,7 @@ function loadNextLevel() {
         anyKeyTries = 0;
     }
     resetAudio();
-    playPing(0.05);
+    if (current_level != 0) playPing(0.10);
 
     current_level++
     if (current_level >= MAPS.length) {

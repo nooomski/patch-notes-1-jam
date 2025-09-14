@@ -58,3 +58,24 @@ function drawRGBSplit(src, i) {
     }
     pop();
   }
+
+function drawGoalSplit(intensity) {
+    const shift = i;//Math.round(constrain(i, 0, 1) * 4); // tweak 8
+    let multiplier = 2;
+
+    push();
+    if (shift > 0) {
+        blendMode(BLEND);
+        const a = 255; // between 0 and 255
+        let p = 15;//shift * multiplier;
+
+        rectMode(CORNER);
+        noStroke();
+        fill(COLORS[goal_color_index][0], COLORS[goal_color_index][1], COLORS[goal_color_index][2], a);
+        rect(goal.x-goal.w + random(-p, p), goal.y + random(-p, p), goal.w, goal.h);
+
+        blendMode(BLEND);
+        noTint();
+    }
+    pop();
+}
