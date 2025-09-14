@@ -124,6 +124,19 @@ function flipHalfOfGraphic(src, whichHalf) {
 function flipHalfOfScreen(whichHalf) {
     flipHalfOfGraphic(displayLayer, whichHalf);
     flipHalfOfGraphic(solidMask, whichHalf)
+    
+    // Flip the trail
+    if (Array.isArray(trail) && trail.length > 0) {
+        const flipLeftHalf = (whichHalf === "left");
+        for (let i = 0; i < trail.length; i++) {
+            const p = trail[i];
+            if (!p) continue;
+            if ((flipLeftHalf && p.x < W/2) || (!flipLeftHalf && p.x >= W/2)) {
+                p.y = H - p.y - player.h;
+            }
+        }
+    }
+    
     // Flip player's y position as well
     if (whichHalf === "left" && player.x < W/2) player.y = H - player.y - player.h;
     else if (whichHalf === "right" && player.x > W/2) player.y = H - player.y - player.h;
