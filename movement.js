@@ -133,8 +133,14 @@ function isBoxFree(x, y, w, h, withPrint = false) {
         if (y < 0 || y + h > H) return false;
 
         // can't move through the middle of the screen
-        if (x + w > W/2 && x < W/2) return false;
-        if (x < W/2 && x + w > W/2) return false;
+        if (x + w > W/2 && x < W/2) {
+            drawForceField();
+            return false;
+        }
+        if (x < W/2 && x + w > W/2) {
+            drawForceField();
+            return false;
+        }
     } else if (x < 0 || y < 0 || x + w > W || y + h > H) return false;
 
     const ix = x | 0, iy = y | 0, iw = w | 0, ih = h | 0;

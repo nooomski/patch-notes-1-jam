@@ -136,11 +136,18 @@ function flipHalfOfScreen(whichHalf) {
             }
         }
     }
-    
+
     // Flip player's y position as well
     if (whichHalf === "left" && player.x < W/2) player.y = H - player.y - player.h;
     else if (whichHalf === "right" && player.x > W/2) player.y = H - player.y - player.h;
     
     if (whichHalf === "left") leftHalfFlipped = !leftHalfFlipped;
     else if (whichHalf === "right") rightHalfFlipped = !rightHalfFlipped;
+}
+
+function drawForceField() {
+    guiLayer.stroke(255, 127);
+    guiLayer.strokeWeight(4);
+    guiLayer.line(W/2, 0, W/2, H);
+    guiLayer.noStroke();
 }
