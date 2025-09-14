@@ -85,6 +85,7 @@ function movePlayer() {
         let x = player.x, y = player.y, w = player.w, h = player.h;
         if (!player.isStuck) {
             if (!isBoxFree(x + 1, y, w, h) && !isBoxFree(x - 1, y, w, h) && !isBoxFree(x, y + 1, w, h) && !isBoxFree(x, y - 1, w, h)) {
+                console.log("Player is stuck", "up", isBoxFree(x, y - 1, w, h, true));
                 player.isStuck = true;
                 shakeScreen(SCREENSHAKE_MAX_FRAMES);
             }
@@ -125,7 +126,7 @@ function moveXWithStep(o, vx, w, h) {
     return { x: x - o.x, y: y - o.y, hitWall: moved < intended };
 }
 
-function isBoxFree(x, y, w, h) {
+function isBoxFree(x, y, w, h, withPrint = false) {
     // Treat out-of-bounds as solid
     if (isSecondRound()) {
         x = x % W; // wrap the x axis
@@ -156,6 +157,7 @@ function isBoxFree(x, y, w, h) {
                 }
 
                 if (!isBackgroundColor(r, g, b)) {
+                    if (withPrint) console.log("Box is not background color", r, g, b, x, y, w, h);
                     return false;
                 }
             }
@@ -175,6 +177,7 @@ function isBoxFree(x, y, w, h) {
             }
 
             if (!isBackgroundColor(r, g, b)) {
+                if (withPrint) console.log("Box is not background color 2", r, g, b, x, y, w, h);
                 return false;
             }
         }

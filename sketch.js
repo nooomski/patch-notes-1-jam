@@ -18,7 +18,7 @@ const JUMP_VELOCITY   = -30.0;
 //const HITBOX_SIZE     = 12;
 //const COLOR_SOLID     = [0];
 
-const DEGUB_MODE = false;
+const DEGUB_MODE = true;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
@@ -150,7 +150,7 @@ function draw() {
 
         // Check for wrap
         if (player.x + player.w > W) {
-            displayLayer.rect(0, player.y, W - player.x, player.h);
+            displayLayer.rect(0, player.y, player.w - (W - player.x), player.h);
         }
     }
 
@@ -171,7 +171,8 @@ function draw() {
     solidMask.rect(player.x, player.y, player.w, player.h);
 
     if (player.x + player.w > W) {
-        solidMask.rect(0, player.y, W - player.x, player.h);
+        solidMask.fill(COLORS[background_color_index][0], COLORS[background_color_index][1], COLORS[background_color_index][2]);
+        solidMask.rect(0, player.y, player.w - (W - player.x), player.h);
     }
 
     drawGUI();
