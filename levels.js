@@ -33,10 +33,10 @@ const BACKGROUND_OFFSET = 5
 const TOLERANCE = 8
 
 function updateColorScheme(player_index) {
-    player_color_index = player_index
-    passthrough_color_index = (player_color_index + PASSTHROUGH_OFFSET) % COLORS.length
-    goal_color_index = (player_color_index + GOAL_OFFSET) % COLORS.length
-    background_color_index = (player_color_index + BACKGROUND_OFFSET) % COLORS.length
+    player_color_index = player_index % COLORS.length
+    passthrough_color_index = (player_index + PASSTHROUGH_OFFSET) % COLORS.length
+    goal_color_index = (player_index + GOAL_OFFSET) % COLORS.length
+    background_color_index = (player_index + BACKGROUND_OFFSET) % COLORS.length
     const bg = COLORS[background_color_index];
     document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
 }

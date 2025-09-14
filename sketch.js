@@ -110,10 +110,10 @@ function draw() {
         changeDisplay(
             COLORS[passthrough_color_index], 
             COLORS[background_color_index], 
-            COLORS[background_color_index + 1 % COLORS.length]
+            COLORS[(background_color_index + 1) % COLORS.length]
         )
 
-        updateColorScheme(player_color_index + 1 % COLORS.length)
+        updateColorScheme((player_color_index + 1) % COLORS.length)
         // find the new place of the goal
         goal = findGoalPositionAndSize();
         passthroughHit = false;
