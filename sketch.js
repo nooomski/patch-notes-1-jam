@@ -3,7 +3,7 @@ const W = 960, H = 640;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
-const TRAIL_MAX_LENGTH= 10;    // frames before trail turns solid
+const TRAIL_MAX_LENGTH= 8;    // frames before trail turns solid
 const MAX_STEP_UP     = 16;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
