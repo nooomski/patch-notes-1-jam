@@ -54,7 +54,15 @@ function movePlayer() {
     if (!isBoxFree(player.x, player.y + 1, player.w, player.h)) player.onGround = true;
     else player.onGround = false;
 
-    if (jump && player.onGround && current_level != 10) player.vy = JUMP_VELOCITY;
+    // Coyote time: allow a few grace frames after leaving ground
+    if (player.onGround) player.coyote = COYOTE_TIME;
+    else if (player.coyote > 0) player.coyote--;
+
+    if (jump && (player.onGround || player.coyote > 0) && current_level != 10) {
+        player.vy = JUMP_VELOCITY;
+        player.onGround = false;
+        player.coyote = 0;
+    }
 
     player.vy = constrain(player.vy, -MAX_FALL_SPEED, MAX_FALL_SPEED);
 
@@ -85,7 +93,7 @@ function movePlayer() {
         let x = player.x, y = player.y, w = player.w, h = player.h;
         if (!player.isStuck) {
             if (!isBoxFree(x + 1, y, w, h) && !isBoxFree(x - 1, y, w, h) && !isBoxFree(x, y + 1, w, h) && !isBoxFree(x, y - 1, w, h)) {
-                console.log("Player is stuck", "up", isBoxFree(x, y - 1, w, h, true));
+                if (DEGUB_MODE) console.log("Player is stuck", "up", isBoxFree(x, y - 1, w, h, true));
                 player.isStuck = true;
                 shakeScreen(SCREENSHAKE_MAX_FRAMES);
             }
@@ -163,7 +171,7 @@ function isBoxFree(x, y, w, h, withPrint = false) {
                 }
 
                 if (!isBackgroundColor(r, g, b)) {
-                    if (withPrint) console.log("Box is not background color", r, g, b, x, y, w, h);
+                    if (withPrint && DEGUB_MODE) console.log("Box is not background color", r, g, b, x, y, w, h);
                     return false;
                 }
             }
@@ -183,7 +191,7 @@ function isBoxFree(x, y, w, h, withPrint = false) {
             }
 
             if (!isBackgroundColor(r, g, b)) {
-                if (withPrint) console.log("Box is not background color 2", r, g, b, x, y, w, h);
+                if (withPrint && DEGUB_MODE) ("Box is not background color 2", r, g, b, x, y, w, h);
                 return false;
             }
         }

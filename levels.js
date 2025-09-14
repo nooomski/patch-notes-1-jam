@@ -19,7 +19,7 @@ const MAPS = [
     {img: 'Levels/level6.png', color_index: 3},
     {img: 'Levels/level7.png', color_index: 1},
     {img: 'Levels/level8.png', color_index: 0},
-    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/level9.png', color_index: 0},
     {img: 'Levels/level10.png', color_index: 5},
     {img: 'Levels/level1.png', color_index: 5},
     {img: 'Levels/level2.png', color_index: 5},
@@ -29,7 +29,7 @@ const MAPS = [
     {img: 'Levels/level6.png', color_index: 3},
     {img: 'Levels/level7.png', color_index: 1},
     {img: 'Levels/level8.png', color_index: 0},
-    {img: 'Levels/levelPlaceHolder.png', color_index: 5},
+    {img: 'Levels/level9.png', color_index: 0},
     {img: 'Levels/end.png', color_index: 5},
 ]
 
@@ -58,28 +58,30 @@ function loadLevel(newLevel) {
         startTime = floor(millis()) / 1000;
         anyKeyTries = 0;
     }
+    // Update level first so isFinalLevel() inside resetAudio() reflects the new level
+    current_level = newLevel
     resetAudio();
     if (current_level != 0) playPing(0.10);
-
-    current_level = newLevel
     if (current_level >= MAPS.length) {
-        console.log("No more levels")
+        if (DEGUB_MODE) console.log("No more levels")
         return
     }
-    console.log("Loading level", current_level)
+    if (DEGUB_MODE) console.log("Loading level", current_level)
     try {
         // to remove the suffix once the levels are done (had caching issues)
         displayImg = loadImage(MAPS[current_level].img + "?v=" + Math.random(), () => {
-            console.log(passthroughHit)
+            if (DEGUB_MODE)console.log(passthroughHit)
             player_color_index = MAPS[current_level].color_index
             updateColorScheme(player_color_index)
             resetLevel()
             if (isFinalLevel()) {
-                let currentTime = floor(millis() / 1000);
-                finalTime = currentTime - startTime;
+                let currentTime = millis() / 1000;
+                finalTime = floor(currentTime - startTime);
             }
-            console.log(passthroughHit)
-            console.log("Level image loaded", current_level)
+            if (DEGUB_MODE) {
+                console.log(passthroughHit)
+                console.log("Level image loaded", current_level)
+            }
         })
     } catch (error) {
         console.error("Error loading level image", error)
@@ -102,6 +104,7 @@ function resetLevel() {
 
         // Flip the screen for lvl 13
         if (current_level == 13) flipHalfOfScreen("right");
+        //if (current_level == 19) flipHalfOfScreen("left");
     }
     else console.error('Level image not loaded');
 
@@ -111,7 +114,7 @@ function resetLevel() {
         displayLayer.loadPixels();
         playerInfo = findPlayerPositionAndLength();
         if (playerInfo) {
-            console.log("Player found in display layer", playerInfo);
+            if (DEGUB_MODE) console.log("Player found in display layer", playerInfo);
             originalPlayerPosition.x = playerInfo.x;
             originalPlayerPosition.y = playerInfo.y;
             player.x = originalPlayerPosition.x;
@@ -119,15 +122,15 @@ function resetLevel() {
             player.w = playerInfo.length;
             player.h = playerInfo.length; // assuming square
             
-        } else {
+        } else if (DEGUB_MODE) {
             console.error('Player not found in display layer');
         }
 
         goal = findGoalPositionAndSize();
         if (goal) {
-            console.log("Goal found in display layer", goal);
+            if (DEGUB_MODE) console.log("Goal found in display layer", goal);
         } else {
-            console.error('Goal not found in display layer');
+            if (DEGUB_MODE) console.error('Goal not found in display layer');
         }
     }  
     player.vx = 0;  player.vy = 0;
@@ -154,7 +157,7 @@ function resetLevel() {
     image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
     goalHit = false;
     passthroughHit = false;
-    setTimeout(() => { loadingNextLevel = false; }, 1000);
+    setTimeout(() => { loadingNextLevel = false; }, 300);
 
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
 

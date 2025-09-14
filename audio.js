@@ -15,6 +15,10 @@ let distBase = 0.0;
 let filter;
 let reverb;
 
+// Final level chord progression state
+let lastNoteChange = 0;
+let nextChangeTime = 0;
+
 // Initialize the audio parameters
 function initAudio() {
     audioInitialized = true;
@@ -70,30 +74,52 @@ function resetAudio() {
     }
 
     if (isFinalLevel()) {
-        osc[0].freq(523.24);
-        osc[0].disconnect(distortion);
-        osc[1].freq(784);
-        osc[1].disconnect(distortion);
-        osc[2].freq(1174.64);
-        osc[2].disconnect(distortion);
-        osc[3].freq(1396.92);
-        osc[3].disconnect(distortion);
-        //distortion.amp(0);
+        // Mute and disconnect the hum/glitch from distortion
+        for (let i=0;i<6;i++) {
+            osc[i].amp(0, 0.05);
+            try { osc[i].disconnect(distortion); } catch(e) {}
+        }
+
+        // Set harmonious chord (C5, G5, D6, F6 for example) and route directly to reverb/filter chain
+        freqs = [130.81, 164.81, 196.00, 261.63];
+        for (let i=0;i<4;i++) {
+            osc[i].freq(freqs[i]);
+            osc[i].connect(reverb);
+            osc[i].amp(0.20, 1);
+        }
+        // Increase reverb
+        reverb.set(8, 4, true);
+
+        // Silence distortion
+        try { distortion.amp(0); } catch(e) {}
     }
 }
 
 // This moves the audio frequency and distortion amplitude based on the effect intensity, call every frame
 function manageAudio() {
-    if (!isFinalLevel()) {
-        let modu = [986, 1574, 3342, 5321];
-        for (i=0;i<4;i++) {
-            osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
-        }
-        distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
+    let modu = [986, 1574, 3342, 5321];
+    for (i=0;i<4;i++) {
+        osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
     }
-    // else {
-    //     console.log("game over");
-    // }
+    distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
+    if (isFinalLevel()) {
+        // Chord progression, change notes at random intervals
+        if (!lastNoteChange) lastNoteChange = millis();
+        if (!nextChangeTime) nextChangeTime = millis() + random(500, 2500);
+        
+        if (millis() > nextChangeTime) {
+            // Scale
+            const chordScale = [130.81, 146.83, 164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00];
+            
+            const oscToChange = Math.floor(random(4));
+            const newFreq = chordScale[Math.floor(random(chordScale.length))];
+            freqs[oscToChange] = newFreq;
+            osc[oscToChange].freq(newFreq, 0.3); // Smooth transition over 0.3 seconds
+            
+            // Set next change time
+            nextChangeTime = millis() + random(500, 2500);
+        }
+    }
 }
 
 function playPing(v) {

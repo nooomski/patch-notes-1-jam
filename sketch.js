@@ -14,9 +14,7 @@ const RUN_ACCEL       = 2;
 const MAX_RUN_SPEED   = 10.0;
 const MAX_FALL_SPEED  = 20.0;
 const JUMP_VELOCITY   = -30.0;
-//const JUMP_BUFFER_FR  = 8;     // press jump a bit early and still jump
-//const HITBOX_SIZE     = 12;
-//const COLOR_SOLID     = [0];
+const COYOTE_TIME     = 8;
 
 const DEGUB_MODE = false;
 
@@ -27,9 +25,7 @@ const player = {
     vx: 0, vy: 0,
     onGround: false,
     isStuck: false,
-    //coyote: 0,
-    //jumpBuf: 0,
-    //lastX: -1, lastY: -1
+    coyote: 0,
 };
 
 // Globals
@@ -97,6 +93,7 @@ function draw() {
     }
     displayLayer.noStroke();
     solidMask.noStroke();
+
     // Load solidmask pixels into memory so it can be used this frame.
     //console.time('solidMask.loadPixels');
     solidMask.loadPixels();
@@ -113,7 +110,7 @@ function draw() {
     // Check for goal and passthrough
     if (goalHit) {
         loadingNextLevel = true;
-        console.log("Goal hit! Loading next level...", passthroughHit);
+        if (DEGUB_MODE) console.log("Goal hit! Loading next level...", passthroughHit);
         loadLevel(current_level + 1);
         goalHit = false
     }
@@ -193,7 +190,7 @@ function draw() {
     }
 
     levelTimeCounter = millis() - levelTimeStart;
-    //console.log("Level Time Counter: ", levelTimeCounter);
+    //if (DEGUB_MODE) console.log("Level Time Counter: ", levelTimeCounter);
 }
 
 function fitCanvas() {
@@ -224,7 +221,7 @@ function findPlayerPositionAndLength() {
             const r = displayLayer.pixels[idx];
             const g = displayLayer.pixels[idx + 1];
             const b = displayLayer.pixels[idx + 2];
-            // console.log("Checking pixel", x, y, r, g, b);
+            // if (DEGUB_MODE) ("Checking pixel", x, y, r, g, b);
             if (isPlayerColor(r, g, b)) {
                 if (!start) {
                     start = true;
@@ -233,7 +230,7 @@ function findPlayerPositionAndLength() {
                 }
                 player.length++;
             } else if (start) {
-                console.log("Player found in display layer", COLORS[player_color_index], x, y);
+                if (DEGUB_MODE) console.log("Player found in display layer", COLORS[player_color_index], x, y);
                 return player;
             }
         }
@@ -329,9 +326,11 @@ function keyPressed() {
     // runs once per press
     if (current_level != 0) {
         if (k === 'r') resetLevel();
-        if (k === 'n') loadLevel(current_level + 1);
-        if (k === 'p') loadLevel(current_level - 1);
-        if (k === 'f') flipHalfOfScreen("left");
+        if (!DEGUB_MODE) {
+            if (k === 'n' && !isFinalLevel()) loadLevel(current_level + 1);
+            if (k === 'p') loadLevel(current_level - 1);
+            if (k === 'f') flipHalfOfScreen("left");
+        }
     }
     else {
         if (!audioInitialized) initAudio();
