@@ -175,7 +175,7 @@ function draw() {
         displayLayer.fill(255, 15);
         displayLayer.textSize(40);
         displayLayer.textAlign(RIGHT, TOP);
-        displayLayer.text("R", W-40,20);
+        displayLayer.text('"R"', W-40,20);
     }
 
     if (current_level == 0) {
