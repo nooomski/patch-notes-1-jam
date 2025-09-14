@@ -26,9 +26,10 @@ const player = {
     w: 0, h: 0,
     vx: 0, vy: 0,
     onGround: false,
+    isStuck: false,
     //coyote: 0,
     //jumpBuf: 0,
-    lastX: -1, lastY: -1
+    //lastX: -1, lastY: -1
 };
 
 // Globals
@@ -40,7 +41,6 @@ let cnv;
 let displayLayer, solidMask;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
-let playerNoMoveCounter = 0;
 
 let loadingNextLevel = false;
 
@@ -149,7 +149,11 @@ function draw() {
     solidMask.rect(player.x, player.y, player.w, player.h);
     solidMask.rectMode(CORNER);
 
+    // === GUI ===
     // Draw Time & handle start screen
+    displayLayer.fill(255);
+    displayLayer.textSize(40);
+
     if (startTime > 0) {
         let totalSeconds = millis() / 1000;
         let t = round(totalSeconds-startTime);
@@ -166,6 +170,14 @@ function draw() {
         solidMask.textAlign(LEFT, TOP);
         solidMask.text("TIME: " + t, 20,20);
     }
+
+    if (player.isStuck) {
+        displayLayer.fill(255, 15);
+        displayLayer.textSize(40);
+        displayLayer.textAlign(RIGHT, TOP);
+        displayLayer.text("R", W-40,20);
+    }
+
     if (current_level == 0) {
         handleStartScreen();
     }

@@ -56,18 +56,14 @@ function movePlayer() {
     if (trail.length > TRAIL_MAX_LENGTH) trail.shift();
 
     // Check if player is stuck
-    
-
-
-
     if (current_level != 0) {
-        player.lastX = player.x; player.lastY = player.y;
-        if (player.x === player.lastX && player.y === player.lastY) playerNoMoveCounter++;
-        else playerNoMoveCounter = 0;
-
-        // if (playerNoMoveCounter > 100) {
-        //     console.log("Player is not moving");
-        // }
+        let x = player.x, y = player.y, w = player.w, h = player.h;
+        if (!player.isStuck) {
+            if (!isBoxFree(x + 1, y, w, h) && !isBoxFree(x - 1, y, w, h) && !isBoxFree(x, y + 1, w, h) && !isBoxFree(x, y - 1, w, h)) {
+                player.isStuck = true;
+                shakeScreen(SCREENSHAKE_MAX_FRAMES);
+            }
+        }
     }
 }
 

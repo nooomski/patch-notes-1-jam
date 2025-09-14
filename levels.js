@@ -93,6 +93,7 @@ function resetLevel() {
             player.y = originalPlayerPosition.y;
             player.w = playerInfo.length;
             player.h = playerInfo.length; // assuming square
+            
         } else {
             console.error('Player not found in display layer');
         }
@@ -106,6 +107,7 @@ function resetLevel() {
     }  
     player.vx = 0;  player.vy = 0;
     player.onGround = false;
+    player.isStuck = false;
 
     // Draw a square the size of the player in the background color at the player's position on the solidMask
     solidMask.noStroke();
