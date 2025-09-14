@@ -1,5 +1,3 @@
-const AUDIO_MAX_OSCS = 6;
-
 // sound params:
 let audioInitialized = false;
 let osc = [];
@@ -26,7 +24,7 @@ function initAudio() {
     reverb = new p5.Reverb();
     reverb.set(5,10,0);
     reverb.drywet(0.5);
-    for (let i=0;i<AUDIO_MAX_OSCS;i++) {
+    for (let i=0;i<6;i++) {
         osc[i] = new p5.Oscillator(1,'sine');
         osc[i].amp(0);
     }
@@ -47,20 +45,22 @@ function resetAudio() {
     pWidth = 0.7 + random(0.3);
     filter.freq(1500+random(1000));
     
-    for (let i=0;i<AUDIO_MAX_OSCS-2;i++) {
+    // Drones
+    for (let i=0;i<4;i++) {
         freqs[i] = i%2 ? 90+random(40) : 60+random(20);
         osc[i].freq(i%2 ? freq2:freq1);
-        osc[i].pan(-pWidth+(pWidth*2*i/(AUDIO_MAX_OSCS-2)));
+        osc[i].pan(-pWidth+(pWidth*2*i/(4)));
         osc[i].start();
         osc[i].amp(0.20, 0.1);
         osc[i].connect(distortion);
         lfoRange[i] = 2+random(30);
         lfoStrength[i] = 5000+random(15000);
     }
-    for (let i=AUDIO_MAX_OSCS-2;i<AUDIO_MAX_OSCS;i++) {
+
+    // Glitch sound
+    for (let i=4;i<6;i++) {
         freqs[i] = i%2 ? 200+random(200) : 100+random(400);
         osc[i].freq(i%2 ? freq2:freq1);
-        //osc[i].pan(-pWidth+(pWidth*2*i/4));
         osc[i].start();
         osc[i].amp(0, 1);
         osc[i].amp(0.50, 0.1);
@@ -68,15 +68,32 @@ function resetAudio() {
         lfoRange[i] = 2+random(30);
         lfoStrength[i] = 5000+random(15000);
     }
+
+    if (isFinalLevel()) {
+        osc[0].freq(523.24);
+        osc[0].disconnect(distortion);
+        osc[1].freq(784);
+        osc[1].disconnect(distortion);
+        osc[2].freq(1174.64);
+        osc[2].disconnect(distortion);
+        osc[3].freq(1396.92);
+        osc[3].disconnect(distortion);
+        //distortion.amp(0);
+    }
 }
 
 // This moves the audio frequency and distortion amplitude based on the effect intensity, call every frame
 function manageAudio() {
-    let modu = [986, 1574, 3342, 5321];
-    for (i=0;i<4;i++) {
-        osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
+    if (!isFinalLevel()) {
+        let modu = [986, 1574, 3342, 5321];
+        for (i=0;i<4;i++) {
+            osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
+        }
+        distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
     }
-    distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
+    // else {
+    //     console.log("game over");
+    // }
 }
 
 function playPing(v) {
