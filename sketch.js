@@ -110,7 +110,7 @@ function draw() {
         loadNextLevel();
         goalHit = false
     }
-    if (passthroughHit) {
+    if (passthroughHit && !isFinalLevel()) {
         shakeScreen(SCREENSHAKE_MAX_FRAMES);
         // change passthrough color and background color
         changeDisplay(
@@ -127,6 +127,14 @@ function draw() {
 
     // Draw player on Display Layer
     if (player.x !== -1 && player.y !== -1) {
+        if (isFinalLevel()) { // overwrite the players starting position
+            displayLayer.noStroke();
+            displayLayer.fill(COLORS[background_color_index][0], COLORS[background_color_index][1], COLORS[background_color_index][2]);
+            displayLayer.rectMode(CORNER);   
+            displayLayer.rect(originalPlayerPosition.x, originalPlayerPosition.y, player.w, player.h);
+            displayLayer.rectMode(CORNER);  
+        }
+            
         displayLayer.noStroke();
         displayLayer.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
         displayLayer.rectMode(CORNER);   
@@ -135,16 +143,18 @@ function draw() {
     }
 
     // Draw oldest player trail position on solidMask
-    if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) || Math.round(trail[0].y) !== Math.round(player.y))) {
-        solidMask.noStroke();
-        solidMask.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
-        solidMask.rectMode(CORNER);   
-        solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
-        if (DEGUB_MODE) {
-            displayLayer.noStroke();
-            displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
-            displayLayer.rectMode(CORNER);   
-            displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
+    if (!isFinalLevel()) {
+        if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) || Math.round(trail[0].y) !== Math.round(player.y))) {
+            solidMask.noStroke();
+            solidMask.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
+            solidMask.rectMode(CORNER);   
+            solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
+            if (DEGUB_MODE) {
+                displayLayer.noStroke();
+                displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
+                displayLayer.rectMode(CORNER);   
+                displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
+            }
         }
     }
 
