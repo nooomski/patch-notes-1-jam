@@ -34,6 +34,7 @@ const player = {
 // Globals
 let trail = [{x: 0, y: 0}];
 let goalHit = false;
+let goal = {x: 0, y: 0, w: 0, h: 0};
 let passthroughHit = false;
 let cnv;
 let displayLayer, solidMask;
@@ -104,11 +105,15 @@ function draw() {
     if (passthroughHit) {
         shakeScreen(SCREENSHAKE_MAX_FRAMES);
         // change passthrough color and background color
-        console.log("Changing colors", COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length]);
-        changeColors(COLORS[passthrough_color_index], COLORS[background_color_index + 1 % COLORS.length])
-        console.log("Changing background color", COLORS[background_color_index], COLORS[background_color_index + 1 % COLORS.length]);
-        changeColors(COLORS[background_color_index], COLORS[background_color_index + 1 % COLORS.length])
+        changeDisplay(
+            COLORS[passthrough_color_index], 
+            COLORS[background_color_index], 
+            COLORS[background_color_index + 1 % COLORS.length]
+        )
+
         updateColorScheme(player_color_index + 1 % COLORS.length)
+        // find the new place of the goal
+        goal = findGoalPositionAndSize();
         passthroughHit = false;
     }
 
@@ -189,8 +194,8 @@ function fitCanvas() {
     );
 }
 
+// make sure to load pixels prior to calling this function
 function findPlayerPositionAndLength() {
-    displayLayer.loadPixels();
     let player = {x: 0, y: 0, length: 0};
     let start = false;
     for (let y = 0; y < H; y++) {
@@ -217,23 +222,39 @@ function findPlayerPositionAndLength() {
     return null;
 }
 
-function findAllColors() {
-    displayLayer.loadPixels();
-    let colors = [];
+// make sure to load pixels prior to calling this function
+function findGoalPositionAndSize() {
+    let goal = {x: 0, y: 0, w: 0, h: 0};
+    let start = false;
     for (let y = 0; y < H; y++) {
         for (let x = 0; x < W; x++) {
             const idx = 4 * (y * W + x);
             const r = displayLayer.pixels[idx];
             const g = displayLayer.pixels[idx + 1];
             const b = displayLayer.pixels[idx + 2];
-            // Check if this color is already in the list
-            let exists = colors.some(c => c[0] === r && c[1] === g && c[2] === b);
-            if (!exists) {
-                colors.push([r, g, b]);
+            if (isGoalColor(r, g, b)) {
+                start = true;
+                goal.x = x;
+                goal.y = y;
+                goal.w++;
+            }
+            else if (start) {
+                break;
+            }
+        }
+        if (start) {
+            const idx = 4 * (y * W + goal.x);
+            const r = displayLayer.pixels[idx];
+            const g = displayLayer.pixels[idx + 1];
+            const b = displayLayer.pixels[idx + 2];
+            if (isGoalColor(r, g, b)) {
+                goal.h++;
+            } else {
+                return goal;
             }
         }
     }
-    return colors;
+    return goal;
 }
 
 function handleStartScreen() {
@@ -263,19 +284,19 @@ function handleStartScreen() {
 	displayLayer.pop();
 }
 
-function changeColors(oldColor, newColor) {
+function changeDisplay(oldPassthroughColor, oldBackgroundColor, newBackgroundColor) {
     displayLayer.loadPixels();
     for (let i = 0; i < displayLayer.pixels.length; i += 4) {
         const r = displayLayer.pixels[i];
         const g = displayLayer.pixels[i + 1];
         const b = displayLayer.pixels[i + 2];
-        if (isCloseToColor(r, g, b, oldColor)) {
-            displayLayer.pixels[i] = newColor[0];
-            displayLayer.pixels[i + 1] = newColor[1];
-            displayLayer.pixels[i + 2] = newColor[2];
-            solidMask.pixels[i] = newColor[0];
-            solidMask.pixels[i + 1] = newColor[1];
-            solidMask.pixels[i + 2] = newColor[2];
+        if (isCloseToColor(r, g, b, oldPassthroughColor) || isCloseToColor(r, g, b, oldBackgroundColor)) {
+            displayLayer.pixels[i] = newBackgroundColor[0];
+            displayLayer.pixels[i + 1] = newBackgroundColor[1];
+            displayLayer.pixels[i + 2] = newBackgroundColor[2];
+            solidMask.pixels[i] = newBackgroundColor[0];
+            solidMask.pixels[i + 1] = newBackgroundColor[1];
+            solidMask.pixels[i + 2] = newBackgroundColor[2];
         }
     }
     solidMask.updatePixels();

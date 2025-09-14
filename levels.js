@@ -12,7 +12,7 @@ const COLORS = [
 ]
 
 const MAPS = [
-    {img: 'Levels/level0.png', color_index: 5},
+    {img: 'Levels/start.png', color_index: 5},
     {img: 'Levels/level1.png', color_index: 5},
     {img: 'Levels/level2.png', color_index: 5},
     {img: 'Levels/level3.png', color_index: 0},
@@ -50,7 +50,7 @@ function loadNextLevel() {
     current_level++
     if (current_level >= MAPS.length) {
         console.log("No more levels")
-        current_level = 0
+        return
     }
     console.log("Loading level", current_level)
     try {
@@ -81,6 +81,7 @@ function resetLevel() {
     updateColorScheme(MAPS[current_level].color_index);
 
     if (current_level != 0) {
+        displayLayer.loadPixels();
         playerInfo = findPlayerPositionAndLength();
         if (playerInfo) {
             console.log("Player found in display layer", playerInfo);
@@ -92,6 +93,13 @@ function resetLevel() {
             player.h = playerInfo.length; // assuming square
         } else {
             console.error('Player not found in display layer');
+        }
+
+        goal = findGoalPositionAndSize();
+        if (goal) {
+            console.log("Goal found in display layer", goal);
+        } else {
+            console.error('Goal not found in display layer');
         }
     }  
     player.vx = 0;  player.vy = 0;
