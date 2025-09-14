@@ -74,6 +74,8 @@ function movePlayer() {
             player.onGround = false;
     }
 
+    // wrap the x axis
+    player.x = (player.x + W) % W;
     // Update trail
     trail.push({x: player.x, y: player.y});
     if (trail.length > TRAIL_MAX_LENGTH) trail.shift();
@@ -125,13 +127,36 @@ function moveXWithStep(o, vx, w, h) {
 
 function isBoxFree(x, y, w, h) {
     // Treat out-of-bounds as solid
-    if (x < 0 || y < 0 || x + w > W || y + h > H) return false;
+    if (isSecondRound()) {
+        x = x % W; // wrap the x axis
+        if (y < 0 || y + h > H) return false;
+    } else if (x < 0 || y < 0 || x + w > W || y + h > H) return false;
 
     const ix = x | 0, iy = y | 0, iw = w | 0, ih = h | 0;
 
     for (let py = iy; py < iy + ih; py++) {
         const row = py * W;
-        for (let px = ix; px < ix + iw; px++) {
+        if ((ix + iw) > W) {
+            for (let px = 0; px < (ix + iw) % W; px++) {
+                const idx = 4 * (row + px);
+                const r = solidMask.pixels[idx];
+                const g = solidMask.pixels[idx + 1];
+                const b = solidMask.pixels[idx + 2];
+
+                if (isGoalColor(r, g, b)) {
+                    goalHit = true;
+                }
+
+                if (isPassthroughColor(r, g, b)) {
+                    passthroughHit = true;
+                }
+
+                if (!isBackgroundColor(r, g, b)) {
+                    return false;
+                }
+            }
+        }
+        for (let px = ix; px < min(ix + iw, W); px++) {
             const idx = 4 * (row + px);
             const r = solidMask.pixels[idx];
             const g = solidMask.pixels[idx + 1];
@@ -142,9 +167,7 @@ function isBoxFree(x, y, w, h) {
             }
 
             if (isPassthroughColor(r, g, b)) {
-                //console.log("Passthrough hit", COLORS[passthrough_color_index], x, y, {r, g, b})
                 passthroughHit = true;
-                break;
             }
 
             if (!isBackgroundColor(r, g, b)) {
@@ -153,4 +176,4 @@ function isBoxFree(x, y, w, h) {
         }
     }
     return true;
-}  
+}

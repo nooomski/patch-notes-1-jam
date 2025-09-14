@@ -18,7 +18,7 @@ const JUMP_VELOCITY   = -30.0;
 //const HITBOX_SIZE     = 12;
 //const COLOR_SOLID     = [0];
 
-const DEGUB_MODE = false;
+const DEGUB_MODE = true;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
@@ -90,6 +90,8 @@ function draw() {
     if (isFinalLevel()) {
         displayLayer.image(displayImg, 0, 0, W, H);
     }
+    displayLayer.noStroke();
+    solidMask.noStroke();
     // Load solidmask pixels into memory so it can be used this frame.
     //console.time('solidMask.loadPixels');
     solidMask.loadPixels();
@@ -107,7 +109,7 @@ function draw() {
     if (goalHit) {
         loadingNextLevel = true;
         console.log("Goal hit! Loading next level...", passthroughHit);
-        loadNextLevel();
+        loadLevel(current_level + 1);
         goalHit = false
     }
     if (passthroughHit && !isFinalLevel()) {
@@ -122,48 +124,45 @@ function draw() {
         updateColorScheme((player_color_index + 1) % COLORS.length)
         // find the new place of the goal
         goal = findGoalPositionAndSize();
-        passthroughHit = false;
     }
+    passthroughHit = false;
 
     // Draw player on Display Layer
     if (player.x !== -1 && player.y !== -1) {
         if (isFinalLevel()) { // overwrite the players starting position
-            displayLayer.noStroke();
             displayLayer.fill(COLORS[background_color_index][0], COLORS[background_color_index][1], COLORS[background_color_index][2]);
-            displayLayer.rectMode(CORNER);   
             displayLayer.rect(originalPlayerPosition.x, originalPlayerPosition.y, player.w, player.h);
-            displayLayer.rectMode(CORNER);  
         }
             
-        displayLayer.noStroke();
+        // Draw player with wrapping effect if clipped at left/right edges
         displayLayer.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
-        displayLayer.rectMode(CORNER);   
         displayLayer.rect(player.x, player.y, player.w, player.h);
-        displayLayer.rectMode(CORNER);  
+
+        // Check for wrap
+        if (player.x + player.w > W) {
+            displayLayer.rect(0, player.y, W - player.x, player.h);
+        }
     }
 
     // Draw oldest player trail position on solidMask
     if (!isFinalLevel()) {
         if ((trail.length == TRAIL_MAX_LENGTH) && (Math.round(trail[0].x) !== Math.round(player.x) || Math.round(trail[0].y) !== Math.round(player.y))) {
-            solidMask.noStroke();
             solidMask.fill(COLORS[player_color_index][0], COLORS[player_color_index][1], COLORS[player_color_index][2]);
-            solidMask.rectMode(CORNER);   
             solidMask.rect(trail[0].x, trail[0].y, player.w, player.h);
             if (DEGUB_MODE) {
-                displayLayer.noStroke();
-                displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]);
-                displayLayer.rectMode(CORNER);   
+                displayLayer.fill(COLORS[player_color_index+1][0], COLORS[player_color_index+1][1], COLORS[player_color_index+1][2]); 
                 displayLayer.rect(trail[0].x, trail[0].y, player.w, player.h);
             }
         }
     }
 
     // Draw player on solidMask to carve out the player's area
-    solidMask.noStroke();
     solidMask.fill(COLORS[background_color_index][0], COLORS[background_color_index][1], COLORS[background_color_index][2]);
-    solidMask.rectMode(CORNER);   
     solidMask.rect(player.x, player.y, player.w, player.h);
-    solidMask.rectMode(CORNER);
+
+    if (player.x + player.w > W) {
+        solidMask.rect(0, player.y, W - player.x, player.h);
+    }
 
     // === GUI ===
     // Draw Time & handle start screen
@@ -315,7 +314,7 @@ function handleStartScreen() {
         playPing(0.25);
 	}
     if (aPressed && nPressed && yPressed) {
-        loadNextLevel();
+        loadLevel(current_level + 1);
     }
 
 	// Redraw level on top transparently so the previous key images fade out
@@ -350,7 +349,10 @@ function keyPressed() {
     // runs once per press
     if (current_level != 0) {
         if (k === 'r') resetLevel();
-        if (k === 'p') loadNextLevel();
+        if (k === 'n') loadLevel(current_level + 1);
+        if (k === 'p') loadLevel(current_level - 1);
+
+
     }
     else {
         if (!audioInitialized) initAudio();

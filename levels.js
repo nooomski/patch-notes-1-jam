@@ -55,7 +55,7 @@ function updateColorScheme(player_index) {
     document.body.style.setProperty('background-color', `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})`);
 }
 
-function loadNextLevel() {
+function loadLevel(newLevel) {
     if (current_level == 0) {
         startTime = floor(millis()) / 1000;
         anyKeyTries = 0;
@@ -63,7 +63,7 @@ function loadNextLevel() {
     resetAudio();
     if (current_level != 0) playPing(0.10);
 
-    current_level++
+    current_level = newLevel
     if (current_level >= MAPS.length) {
         console.log("No more levels")
         return
@@ -194,4 +194,8 @@ function resetLevelCounter() {
 
 function isFinalLevel() {
     return current_level == MAPS.length - 1;
+}
+
+function isSecondRound() {
+    return current_level > 10 && !isFinalLevel();
 }
