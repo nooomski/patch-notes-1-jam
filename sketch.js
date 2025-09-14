@@ -82,15 +82,15 @@ function windowResized() {
 
 function draw() {
     // Load solidmask pixels into memory so it can be used this frame.
-    console.time('solidMask.loadPixels');
+    //console.time('solidMask.loadPixels');
     solidMask.loadPixels();
-    console.timeEnd('solidMask.loadPixels');
+    //console.timeEnd('solidMask.loadPixels');
 
     // Move player and manage audio
     if (!loadingNextLevel) {
-        console.time('movePlayer');
+        //console.time('movePlayer');
         movePlayer();
-        console.timeEnd('movePlayer');
+        //console.timeEnd('movePlayer');
     }
     if (audioInitialized) manageAudio();
 
@@ -144,13 +144,20 @@ function draw() {
 
     // Draw Time & handle start screen
     if (startTime > 0) {
+        let totalSeconds = round(millis() / 1000);
+        let t = round(totalSeconds-startTime);
+
+        // Draw on display layer to show the user the time
         displayLayer.fill(255);
         displayLayer.textSize(40);
         displayLayer.textAlign(LEFT, TOP);
-
-        let totalSeconds = round(millis() / 1000);
-        let t = round(totalSeconds-startTime);
         displayLayer.text("TIME: " + t, 20,20);
+
+        // Draw on solid mask too to make the user bump into it
+        solidMask.fill(255);
+        solidMask.textSize(40);
+        solidMask.textAlign(LEFT, TOP);
+        solidMask.text("TIME: " + t, 20,20);
     }
     if (current_level == 0) {
         handleStartScreen();
