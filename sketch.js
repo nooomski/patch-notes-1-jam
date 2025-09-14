@@ -18,7 +18,7 @@ const JUMP_VELOCITY   = -30.0;
 //const HITBOX_SIZE     = 12;
 //const COLOR_SOLID     = [0];
 
-const DEGUB_MODE = true;
+const DEGUB_MODE = false;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
