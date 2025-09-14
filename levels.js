@@ -87,6 +87,7 @@ function loadLevel(newLevel) {
         console.error("Error loading level image", error)
     }
     resetLevelCounter();
+    clearGUI();
 }
 
 function resetLevel() {
@@ -157,6 +158,7 @@ function resetLevel() {
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
 
     resetLevelCounter();
+    clearGUI();
 }
 
 function isPlayerColor(r, g, b) {
