@@ -97,12 +97,14 @@ function resetAudio() {
 
 // This moves the audio frequency and distortion amplitude based on the effect intensity, call every frame
 function manageAudio() {
-    let modu = [986, 1574, 3342, 5321];
-    for (i=0;i<4;i++) {
-        osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
+    if (!isFinalLevel) {
+        let modu = [986, 1574, 3342, 5321];
+        for (i=0;i<4;i++) {
+            osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
+        }
+        distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
     }
-    distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
-    if (isFinalLevel()) {
+    else (isFinalLevel()) {
         // Chord progression, change notes at random intervals
         if (!lastNoteChange) lastNoteChange = millis();
         if (!nextChangeTime) nextChangeTime = millis() + random(500, 2500);

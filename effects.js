@@ -124,6 +124,8 @@ function flipHalfOfGraphic(src, whichHalf) {
 function flipHalfOfScreen(whichHalf) {
     flipHalfOfGraphic(displayLayer, whichHalf);
     flipHalfOfGraphic(solidMask, whichHalf)
+
+    shakeScreen(SCREENSHAKE_MAX_FRAMES);
     
     // Flip the trail
     if (Array.isArray(trail) && trail.length > 0) {
@@ -135,6 +137,11 @@ function flipHalfOfScreen(whichHalf) {
                 p.y = H - p.y - player.h;
             }
         }
+    }
+
+    // Flip the goal vertically
+    if (goal) {
+        goal.y = H - goal.y - goal.h;
     }
 
     // Flip player's y position as well

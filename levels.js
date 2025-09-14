@@ -44,6 +44,8 @@ const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
 const TOLERANCE = 8
 
+level13Flipped = false;
+
 function updateColorScheme(player_index) {
     player_color_index = player_index % COLORS.length
     passthrough_color_index = (player_index + PASSTHROUGH_OFFSET) % COLORS.length
@@ -101,12 +103,8 @@ function resetLevel() {
     if (displayImg) {
         displayLayer.image(displayImg, 0, 0, W, H);
         solidMask.image(displayImg, 0, 0, W, H);
-
-        // Flip the screen for lvl 13
-        if (current_level == 13) flipHalfOfScreen("right");
-        //if (current_level == 19) flipHalfOfScreen("left");
     }
-    else console.error('Level image not loaded');
+    else if (DEGUB_MODE) console.error('Level image not loaded');
 
     updateColorScheme(MAPS[current_level].color_index);
 
@@ -123,7 +121,7 @@ function resetLevel() {
             player.h = playerInfo.length; // assuming square
             
         } else if (DEGUB_MODE) {
-            console.error('Player not found in display layer');
+            if (DEGUB_MODE) console.error('Player not found in display layer');
         }
 
         goal = findGoalPositionAndSize();
@@ -148,10 +146,9 @@ function resetLevel() {
     solidMask.rect(player.x, player.y, player.w, player.h);
     solidMask.rectMode(CORNER);
 
+    level13Flipped = false;
 
-    //player.coyote = 0;
-    //player.jumpBuf = 0;
-    //player.lastX = player.x; player.lastY = player.y;
+    player.coyote = 0;
 
     trail.length = 0;
     image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);

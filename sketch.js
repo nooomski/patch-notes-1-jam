@@ -3,7 +3,7 @@ const W = 960, H = 640;
 
 // ----- PARAMS -----
 const TRAIL_WIDTH     = 6;     // px
-const TRAIL_MAX_LENGTH= 8;    // frames before trail turns solid
+const TRAIL_MAX_LENGTH= 5;    // frames before trail turns solid
 const MAX_STEP_UP     = 16;     // max px to "walk up" slopes
 const GRAVITY         = 2;
 const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
@@ -171,14 +171,16 @@ function draw() {
         solidMask.rect(0, player.y, W - player.x, player.h);
     }
 
-    drawGUI();
-
-    if (current_level == 0) {
-        handleStartScreen();
+    // Custom Level Logic
+    if (current_level == 0) handleStartScreen();
+    if (current_level == 13 && levelTimeCounter > 500 && level13Flipped == false) {
+        flipHalfOfScreen("right");
+        level13Flipped = true;
     }
 
     handleScreenShake();
     effectIntensity = screenShakeCounter + current_level/2; // Applies to chromatic aberration effect and audio
+    drawGUI();
 
     // Draw Display Layer
     image(displayLayer, screenShakeX, screenShakeY);
