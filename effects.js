@@ -7,6 +7,9 @@ let screenShakeCounter = 0;
 let effectIntensity = 0;
 let effectIntensityMax = 50;
 
+let leftHalfFlipped = false;
+let rightHalfFlipped = false;
+
 function shakeScreen(intensity) {
     screenShakeCounter = intensity;
 }
@@ -78,4 +81,53 @@ function drawGoalSplit(intensity) {
         noTint();
     }
     pop();
+}
+
+// This flips half of a graphic vertically
+function flipHalfOfGraphic(src, whichHalf) {
+    if (!src || (whichHalf !== "left" && whichHalf !== "right")) return;
+
+    src.loadPixels();
+
+    const w = src.width;
+    const h = src.height;
+
+    const startX = (whichHalf === "left") ? 0 : Math.floor(w / 2);
+    const endX = startX + Math.floor(w / 2) - 1; // inclusive
+
+    // Swap pixels between top and bottom rows within the selected half only
+    for (let yTop = 0, yBottom = h - 1; yTop < yBottom; yTop++, yBottom--) {
+        for (let x = startX; x <= endX; x++) {
+            const idxTop = 4 * (yTop * w + x);
+            const idxBottom = 4 * (yBottom * w + x);
+
+            const r = src.pixels[idxTop];
+            const g = src.pixels[idxTop + 1];
+            const b = src.pixels[idxTop + 2];
+            const a = src.pixels[idxTop + 3];
+
+            src.pixels[idxTop] = src.pixels[idxBottom];
+            src.pixels[idxTop + 1] = src.pixels[idxBottom + 1];
+            src.pixels[idxTop + 2] = src.pixels[idxBottom + 2];
+            src.pixels[idxTop + 3] = src.pixels[idxBottom + 3];
+
+            src.pixels[idxBottom] = r;
+            src.pixels[idxBottom + 1] = g;
+            src.pixels[idxBottom + 2] = b;
+            src.pixels[idxBottom + 3] = a;
+        }
+    }
+
+    src.updatePixels();
+}
+
+function flipHalfOfScreen(whichHalf) {
+    flipHalfOfGraphic(displayLayer, whichHalf);
+    flipHalfOfGraphic(solidMask, whichHalf)
+    // Flip player's y position as well
+    if (whichHalf === "left" && player.x < W/2) player.y = H - player.y - player.h;
+    else if (whichHalf === "right" && player.x > W/2) player.y = H - player.y - player.h;
+    
+    if (whichHalf === "left") leftHalfFlipped = !leftHalfFlipped;
+    else if (whichHalf === "right") rightHalfFlipped = !rightHalfFlipped;
 }

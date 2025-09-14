@@ -38,7 +38,7 @@ let goalHit = false;
 let goal = {x: 0, y: 0, w: 0, h: 0};
 let passthroughHit = false;
 let cnv;
-let displayLayer, solidMask;
+let displayLayer, solidMask, guiLayer;
 let displayImg;
 let originalPlayerPosition = {x: -1, y: -1};
 
@@ -72,6 +72,11 @@ function setup() {
     displayLayer = createGraphics(W, H);
     displayLayer.pixelDensity(1);
     displayLayer.noSmooth();
+
+    // Layer that contains the GUI
+    guiLayer = createGraphics(W, H);
+    guiLayer.pixelDensity(1);
+    guiLayer.noSmooth();
     
     // Layer that only contains solids (e.g. no trail)
     solidMask = createGraphics(W, H);
@@ -176,24 +181,63 @@ function draw() {
             t = finalTime;
         }
 
-        // Draw on display layer to show the user the time
-        displayLayer.fill(255);
-        displayLayer.textSize(40);
-        displayLayer.textAlign(LEFT, TOP);
-        displayLayer.text("TIME: " + t, 20,20);
+        let tx = 20, ty = 20;
 
-        // Draw on solid mask too to make the user bump into it
-        solidMask.fill(255);
-        solidMask.textSize(40);
-        solidMask.textAlign(LEFT, TOP);
-        solidMask.text("TIME: " + t, 20,20);
+        // Draw on display layer to show the user the time
+        guiLayer.fill(255);
+        guiLayer.textSize(40);
+        guiLayer.textAlign(LEFT, TOP);
+        guiLayer.text("TIME: " + t, tx,ty);
+    }
+    if (player.isStuck) {
+        guiLayer.fill(255, 15);
+        guiLayer.textSize(40);
+        guiLayer.textAlign(RIGHT, TOP);
+        guiLayer.text('"R"', W-40,20);
     }
 
-    if (player.isStuck) {
-        displayLayer.fill(255, 15);
-        displayLayer.textSize(40);
-        displayLayer.textAlign(RIGHT, TOP);
-        displayLayer.text('"R"', W-40,20);
+    // Draw GUI Layer on display and solid mask, respecting vertical half flips
+    const leftFlip = (typeof leftHalfFlipped !== 'undefined') && leftHalfFlipped;
+    const rightFlip = (typeof rightHalfFlipped !== 'undefined') && rightHalfFlipped;
+
+    // Draw to displayLayer
+    if (leftFlip) {
+        displayLayer.push();
+        displayLayer.translate(0, H);
+        displayLayer.scale(1, -1);
+        displayLayer.image(guiLayer, 0, 0, W/2, H, 0, 0, W/2, H);
+        displayLayer.pop();
+    } else {
+        displayLayer.image(guiLayer, 0, 0, W/2, H, 0, 0, W/2, H);
+    }
+    if (rightFlip) {
+        displayLayer.push();
+        displayLayer.translate(0, H);
+        displayLayer.scale(1, -1);
+        displayLayer.image(guiLayer, W/2, 0, W/2, H, W/2, 0, W/2, H);
+        displayLayer.pop();
+    } else {
+        displayLayer.image(guiLayer, W/2, 0, W/2, H, W/2, 0, W/2, H);
+    }
+
+    // Draw to solidMask
+    if (leftFlip) {
+        solidMask.push();
+        solidMask.translate(0, H);
+        solidMask.scale(1, -1);
+        solidMask.image(guiLayer, 0, 0, W/2, H, 0, 0, W/2, H);
+        solidMask.pop();
+    } else {
+        solidMask.image(guiLayer, 0, 0, W/2, H, 0, 0, W/2, H);
+    }
+    if (rightFlip) {
+        solidMask.push();
+        solidMask.translate(0, H);
+        solidMask.scale(1, -1);
+        solidMask.image(guiLayer, W/2, 0, W/2, H, W/2, 0, W/2, H);
+        solidMask.pop();
+    } else {
+        solidMask.image(guiLayer, W/2, 0, W/2, H, W/2, 0, W/2, H);
     }
 
     if (current_level == 0) {
@@ -351,8 +395,7 @@ function keyPressed() {
         if (k === 'r') resetLevel();
         if (k === 'n') loadLevel(current_level + 1);
         if (k === 'p') loadLevel(current_level - 1);
-
-
+        if (k === 'f') flipHalfOfScreen("left");
     }
     else {
         if (!audioInitialized) initAudio();

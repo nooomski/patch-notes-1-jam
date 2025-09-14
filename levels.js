@@ -94,6 +94,9 @@ function resetLevel() {
     displayLayer.clear(); // keep transparent so we can draw exactly what we want
     solidMask.clear();
 
+    leftHalfFlipped = false;
+    rightHalfFlipped = false;
+
     if (displayImg) {
         displayLayer.image(displayImg, 0, 0, W, H);
         solidMask.image(displayImg, 0, 0, W, H);
