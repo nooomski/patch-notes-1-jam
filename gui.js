@@ -1,9 +1,15 @@
+const GUI_COLOR = [241, 241, 241];
+
+let iconGoal;
+let iconPassthrough;
+
 function drawGUI() {
     // === GUI ===
     // Draw Time & handle start screen
-    displayLayer.fill(255);
+    displayLayer.fill(GUI_COLOR);
     displayLayer.textSize(40);
 
+    // Draw Time
     if (startTime > 0) {
         let totalSeconds = millis() / 1000;
         let t = round(totalSeconds-startTime);
@@ -11,20 +17,40 @@ function drawGUI() {
             t = finalTime;
         }
 
-        let tx = 20, ty = 20;
+        let tx = 32, ty = 33;
 
         // Draw on display layer to show the user the time
-        guiLayer.fill(255);
-        guiLayer.textSize(40);
+        guiLayer.fill(GUI_COLOR);
+        guiLayer.textSize(32);
         guiLayer.textAlign(LEFT, TOP);
         guiLayer.text("TIME: " + t, tx,ty);
     }
     if (player.isStuck) {
-        guiLayer.fill(255, 15);
-        guiLayer.textSize(40);
-        guiLayer.textAlign(RIGHT, TOP);
-        guiLayer.text('"R"', W-40,20);
+        guiLayer.fill(GUI_COLOR, 15);
+        guiLayer.textSize(32);
+        guiLayer.textAlign(CENTER, TOP);
+        guiLayer.text('"R"', W/2,33);
     }
+
+    // Draw color rectangles for goal and passthrough
+    guiLayer.stroke(GUI_COLOR);
+    guiLayer.strokeWeight(2);
+    
+    // Goal color rectangle & icon
+    if (current_level != 0 && !isFinalLevel()) {
+        guiLayer.image(iconGoal, W-54, 33, 32, 32);
+        guiLayer.fill(COLORS[goal_color_index]);
+        guiLayer.rect(W-96, 33, 32, 32);
+    }
+    
+    // Passthrough color rectangle & icon
+    if (current_level >= 4 && !isFinalLevel()) {
+        guiLayer.image(iconPassthrough, W-55, 80, 32, 32);
+        guiLayer.fill(COLORS[passthrough_color_index]);
+        guiLayer.rect(W-96, 80, 32, 32);
+    }
+    
+    guiLayer.noStroke();
 
     // Draw GUI Layer on display and solid mask, respecting vertical half flips
     const leftFlip = (typeof leftHalfFlipped !== 'undefined') && leftHalfFlipped;

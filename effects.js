@@ -154,7 +154,7 @@ function flipHalfOfScreen(whichHalf) {
 }
 
 function drawForceField() {
-    guiLayer.stroke(255, 127);
+    guiLayer.stroke(GUI_COLOR, 127);
     guiLayer.strokeWeight(4);
     guiLayer.line(W/2, 0, W/2, H);
     guiLayer.noStroke();

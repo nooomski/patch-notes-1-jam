@@ -16,20 +16,24 @@ const MAPS = [
     {img: 'Levels/level3.png', color_index: 0},
     {img: 'Levels/level4.png', color_index: 0},
     {img: 'Levels/level5.png', color_index: 0},
-    {img: 'Levels/level6.png', color_index: 3},
-    {img: 'Levels/level7.png', color_index: 1},
-    {img: 'Levels/level8.png', color_index: 0},
-    {img: 'Levels/level9.png', color_index: 7},
-    {img: 'Levels/level10.png', color_index: 5},
+    {img: 'Levels/level6.png', color_index: 0},
+    {img: 'Levels/level7.png', color_index: 0},
+    {img: 'Levels/level8.png', color_index: 3},
+    {img: 'Levels/level9.png', color_index: 1},
+    {img: 'Levels/level10.png', color_index: 0},
+    {img: 'Levels/level11.png', color_index: 7},
+    {img: 'Levels/level12.png', color_index: 5},
     {img: 'Levels/level1.png', color_index: 5},
     {img: 'Levels/level2.png', color_index: 5},
     {img: 'Levels/level3.png', color_index: 0},
     {img: 'Levels/level5.png', color_index: 0},
     {img: 'Levels/level4.png', color_index: 0},
-    {img: 'Levels/level6.png', color_index: 3},
-    {img: 'Levels/level7.png', color_index: 1},
-    {img: 'Levels/level9.png', color_index: 7},
-    {img: 'Levels/level8.png', color_index: 0},
+    {img: 'Levels/level7.png', color_index: 0},
+    {img: 'Levels/level6.png', color_index: 0},
+    {img: 'Levels/level8.png', color_index: 3},
+    {img: 'Levels/level9.png', color_index: 1},
+    {img: 'Levels/level10.png', color_index: 0},
+    {img: 'Levels/level11.png', color_index: 7},
     {img: 'Levels/end.png', color_index: 5},
 ]
 
@@ -38,11 +42,13 @@ var player_color_index = 0
 var passthrough_color_index = 0
 var goal_color_index = 0
 var background_color_index = 0
+var passthroughCountThisLevel = 0
 
 const PASSTHROUGH_OFFSET = 1
 const GOAL_OFFSET = 2
 const BACKGROUND_OFFSET = 5
 const TOLERANCE = 8
+const TOTAL_LEVELS = 12
 
 level13Flipped = false;
 
@@ -63,7 +69,7 @@ function loadLevel(newLevel) {
     // Update level first so isFinalLevel() inside resetAudio() reflects the new level
     current_level = newLevel
     resetAudio();
-    if (current_level != 0) playPing(0.10);
+    
     if (current_level >= MAPS.length) {
         if (DEGUB_MODE) console.log("No more levels")
         return
@@ -154,6 +160,7 @@ function resetLevel() {
     image(displayLayer, -SCREENSHAKE_INTENSITY/2+screenShakeX, -SCREENSHAKE_INTENSITY/2+screenShakeY);
     goalHit = false;
     passthroughHit = false;
+    passthroughCountThisLevel = 0;
     setTimeout(() => { loadingNextLevel = false; }, 300);
 
     shakeScreen(SCREENSHAKE_MAX_FRAMES);
@@ -173,6 +180,12 @@ function isPassthroughColor(r, g, b) {
 }
 
 function isGoalColor(r, g, b) {
+    // Special-case: last level before end (round 2 level 11)
+    // Treat rgb(241,241,241) as a goal color, since the computed goal color
+    // isn't present after the final passthrough on this level.
+    if (current_level == MAPS.length - 2 && isSecondRound() && passthroughCountThisLevel >= 3) {
+        if (isCloseToColor(r, g, b, [241, 241, 241])) return true;
+    }
     const target = COLORS[goal_color_index];
     return isCloseToColor(r, g, b, target);
 }
@@ -203,5 +216,5 @@ function isFinalLevel() {
 }
 
 function isSecondRound() {
-    return current_level > 10 && !isFinalLevel();
+    return current_level > TOTAL_LEVELS && !isFinalLevel();
 }

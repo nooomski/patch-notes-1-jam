@@ -2,13 +2,13 @@
 const W = 960, H = 640;
 
 // ----- PARAMS -----
-const TRAIL_WIDTH     = 6;     // px
-const TRAIL_MAX_LENGTH= 5;    // frames before trail turns solid
+const TRAIL_WIDTH     = 6;      // px
+const TRAIL_MAX_LENGTH= 5;      // frames before trail turns solid
 const MAX_STEP_UP     = 16;     // max px to "walk up" slopes
 const GRAVITY         = 2;
-const GROUND_DRAG     = 0.22;  // 0.10–0.25 feels good
+const GROUND_DRAG     = 0.22;   // 0.10–0.25 feels good
 const AIR_DRAG        = 0.02;
-const VX_DEADZONE     = 0.03;
+const VX_DEADZONE     = 0.5;
 
 const RUN_ACCEL       = 2;
 const MAX_RUN_SPEED   = 10.0;
@@ -16,7 +16,9 @@ const MAX_FALL_SPEED  = 20.0;
 const JUMP_VELOCITY   = -30.0;
 const COYOTE_TIME     = 8;
 
-const DEGUB_MODE = true;
+const NEXT_LEVEL_DELAY = 500;   // ms
+
+const DEGUB_MODE = false;
 
 // THE X & Y POSITIONS ARE AT TOP LEFT CORNER OF THE PLAYER
 const player = {
@@ -42,6 +44,9 @@ let loadingNextLevel = false;
 let levelTimeCounter = 0;
 let levelTimeStart = 0;
 
+let nextLevelTimeMs = 0;
+let nextLevelToLoad = -1;
+
 let startTime = 0;
 let finalTime = 0;
 let keyA, keyN, keyY, keyHelper;
@@ -57,6 +62,8 @@ function preload() {
     keyN = loadImage('Levels/n.png')
     keyY = loadImage('Levels/y.png')
     keyHelper = loadImage('Levels/anyHelper.png')
+    iconGoal = loadImage('graphics/goal.png')
+    iconPassthrough = loadImage('graphics/passthrough.png')
 }
 
 function setup() {
@@ -109,12 +116,19 @@ function draw() {
 
     // Check for goal and passthrough
     if (goalHit) {
-        loadingNextLevel = true;
-        if (DEGUB_MODE) console.log("Goal hit! Loading next level...", passthroughHit);
-        loadLevel(current_level + 1);
+        if (!loadingNextLevel) {
+            loadingNextLevel = true;
+            if (current_level != 0) {
+                playPing(0.20);
+                shakeScreen(SCREENSHAKE_MAX_FRAMES);
+            }
+            nextLevelToLoad = current_level + 1;
+            nextLevelTimeMs = millis() + NEXT_LEVEL_DELAY;
+            if (DEGUB_MODE) console.log("Goal hit! Scheduling next level...", { nextLevelToLoad, nextLevelTimeMs });
+        }
         goalHit = false
     }
-    if (passthroughHit && !isFinalLevel()) {
+    if (passthroughHit && !isFinalLevel() && !loadingNextLevel) {
         shakeScreen(SCREENSHAKE_MAX_FRAMES);
         // change passthrough color and background color
         changeDisplay(
@@ -124,6 +138,10 @@ function draw() {
         )
 
         updateColorScheme((player_color_index + 1) % COLORS.length)
+        // track passthroughs for special-case goal color on round 2 level 11
+        if (typeof passthroughCountThisLevel !== 'undefined') {
+            passthroughCountThisLevel++;
+        }
         // find the new place of the goal
         goal = findGoalPositionAndSize();
         if (goal) {
@@ -136,6 +154,15 @@ function draw() {
         }
     }
     passthroughHit = false;
+
+    // Handle delayed level load after freeze
+    if (loadingNextLevel && nextLevelTimeMs > 0 && millis() >= nextLevelTimeMs) {
+        if (nextLevelToLoad >= 0) {
+            loadLevel(nextLevelToLoad);
+        }
+        nextLevelToLoad = -1;
+        nextLevelTimeMs = 0;
+    }
 
     // Draw player on Display Layer
     if (player.x !== -1 && player.y !== -1) {
@@ -176,7 +203,7 @@ function draw() {
 
     // Custom Level Logic
     if (current_level == 0) handleStartScreen();
-    if (current_level == 13 && levelTimeCounter > 500 && level13Flipped == false) {
+    if (current_level == TOTAL_LEVELS+3 && levelTimeCounter > 500 && level13Flipped == false) {
         flipHalfOfScreen("right");
         level13Flipped = true;
     }
@@ -189,9 +216,9 @@ function draw() {
     image(displayLayer, screenShakeX, screenShakeY);
     if (!isFinalLevel()) {
         drawRGBSplit(displayLayer, effectIntensity);
-        if (current_level != 0) {
-            drawGoalSplit(effectIntensity);
-        }
+        // if (current_level != 0) {
+        //     drawGoalSplit(effectIntensity);
+        // }
     }
 
     levelTimeCounter = millis() - levelTimeStart;

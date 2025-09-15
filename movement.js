@@ -1,7 +1,7 @@
 function movePlayer() {
     let targetAx = 0;
     let left, right, jump;
-    if (current_level != 10) {
+    if (current_level != TOTAL_LEVELS) {
         // Input
         left  = keyIsDown(LEFT_ARROW)  || keyIsDown(65);  // LEFT / A
         right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);  // RIGHT / D
@@ -58,7 +58,7 @@ function movePlayer() {
     if (player.onGround) player.coyote = COYOTE_TIME;
     else if (player.coyote > 0) player.coyote--;
 
-    if (jump && (player.onGround || player.coyote > 0) && current_level != 10) {
+    if (jump && (player.onGround || player.coyote > 0) && current_level != TOTAL_LEVELS) {
         player.vy = JUMP_VELOCITY;
         player.onGround = false;
         player.coyote = 0;
@@ -84,6 +84,28 @@ function movePlayer() {
 
     // wrap the x axis
     player.x = (player.x + W) % W;
+
+    // can't move through the middle of the screen
+    if (isSecondRound()) {
+        if (player.x + player.w > W/2 - 3 && player.x < W/2 - 3) {
+            if (!player.isStuck) {
+                player.x++; 
+                player.isStuck = true;
+                shakeScreen(SCREENSHAKE_MAX_FRAMES);
+            }
+            drawForceField();
+        }
+        if (player.x < W/2 + 3 && player.x + player.w > W/2 + 3) {
+            if (!player.isStuck) {
+                player.x--; 
+                player.isStuck = true;
+                shakeScreen(SCREENSHAKE_MAX_FRAMES);
+            }
+            drawForceField();
+        }
+    }
+
+
     // Update trail
     trail.push({x: player.x, y: player.y});
     if (trail.length > TRAIL_MAX_LENGTH) trail.shift();
@@ -99,7 +121,7 @@ function movePlayer() {
             }
         }
     }
-    if (current_level == 10) {
+    if (current_level == TOTAL_LEVELS) {
         if (player.x <= 0 && !player.isStuck) {
             player.isStuck = true;
             shakeScreen(SCREENSHAKE_MAX_FRAMES);
@@ -139,16 +161,6 @@ function isBoxFree(x, y, w, h, withPrint = false) {
     if (isSecondRound()) {
         x = x % W; // wrap the x axis
         if (y < 0 || y + h > H) return false;
-
-        // can't move through the middle of the screen
-        if (x + w > W/2 && x < W/2) {
-            drawForceField();
-            return false;
-        }
-        if (x < W/2 && x + w > W/2) {
-            drawForceField();
-            return false;
-        }
     } else if (x < 0 || y < 0 || x + w > W || y + h > H) return false;
 
     const ix = x | 0, iy = y | 0, iw = w | 0, ih = h | 0;

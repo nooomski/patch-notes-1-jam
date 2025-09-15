@@ -18,6 +18,7 @@ let reverb;
 // Final level chord progression state
 let lastNoteChange = 0;
 let nextChangeTime = 0;
+let oscIndex = 0;
 
 // Initialize the audio parameters
 function initAudio() {
@@ -55,7 +56,7 @@ function resetAudio() {
         osc[i].freq(i%2 ? freq2:freq1);
         osc[i].pan(-pWidth+(pWidth*2*i/(4)));
         osc[i].start();
-        osc[i].amp(0.20, 0.1);
+        osc[i].amp(0.40, 0.1);
         osc[i].connect(distortion);
         lfoRange[i] = 2+random(30);
         lfoStrength[i] = 5000+random(15000);
@@ -69,8 +70,6 @@ function resetAudio() {
         osc[i].amp(0, 1);
         osc[i].amp(0.50, 0.1);
         osc[i].connect(distortion);
-        lfoRange[i] = 2+random(30);
-        lfoStrength[i] = 5000+random(15000);
     }
 
     if (isFinalLevel()) {
@@ -88,7 +87,7 @@ function resetAudio() {
             osc[i].amp(0.15, 1);
         }
         // Increase reverb
-        reverb.set(8, 4, true);
+        reverb.set(2, 4, true);
         reverb.drywet(0.7);
 
         // Silence distortion
@@ -98,21 +97,24 @@ function resetAudio() {
 
 // This moves the audio frequency and distortion amplitude based on the effect intensity, call every frame
 function manageAudio() {
-    let modu = [986, 1574, 3342, 5321];
-    for (i=0;i<4;i++) {
-        if (!isFinalLevel()) osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
+    if (!isFinalLevel()) {
+        let modu = [986, 1574, 3342, 5321];
+        for (i=0;i<4;i++) {
+            osc[i].freq(freqs[i] + sin(frameCount%modu[i] / lfoStrength[i]) * lfoRange[i],1);
+        }
+        distortion.amp(distBase + effectIntensity/effectIntensityMax);
     }
-    distortion.amp(distBase + effectIntensity/effectIntensityMax/2);
-    if (isFinalLevel()) {
+    else {
         // Chord progression, change notes at random intervals
         if (!lastNoteChange) lastNoteChange = millis();
         if (!nextChangeTime) nextChangeTime = millis() + random(500, 2500);
         
         if (millis() > nextChangeTime) {
             // Scale
-            const chordScale = [130.81, 146.83, 164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00];
+            const chordScale = [98.00, 110.00, 123.47, 130.81, 146.83, 164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88];
             
-            const oscToChange = Math.floor(random(4));
+            const oscToChange = oscIndex % 4;
+            oscIndex++;
             const newFreq = chordScale[Math.floor(random(chordScale.length))];
             freqs[oscToChange] = newFreq;
             osc[oscToChange].freq(newFreq, 0.3); // Smooth transition over 0.3 seconds
